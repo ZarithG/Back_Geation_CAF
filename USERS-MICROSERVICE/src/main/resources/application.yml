@@ -1,0 +1,15 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: USERS-MICROSERVICE
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3310/UsersDB?createDatabaseIfNotExist=true
+    username: admin
+    password: 'UsersMicro*1234'

@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  mysql-users-microservice:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'UsersDB'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: UsersMicro*1234
+      MYSQL_ROOT_PASSWORD: UsersMicro*1234
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_users_caf_data:/var/lib/mysql
+
+volumes:
+  mysql_users_caf_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
