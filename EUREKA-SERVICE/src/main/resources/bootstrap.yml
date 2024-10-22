@@ -5,3 +5,7 @@ spring:
     config:
       enabled: true
       uri: http://localhost:9093
+  security:
+    user:
+      name: eureka
+      password: EurekaService*8761

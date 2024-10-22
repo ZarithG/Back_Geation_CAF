@@ -8,6 +8,6 @@ spring:
       config:
         server:
           git:
-              default-label: config-server
+              default-label: eureka
               uri: https://github.com/ZarithG/Back_Gestion_CAF
               search-paths: CONFIG-DATA
