@@ -1,0 +1,13 @@
+server:
+    port: 9093
+
+spring:
+    application:
+        name: CONFIG-SERVICE
+    cloud:
+      config:
+        server:
+          git:
+              default-label: config-server
+              uri: https://github.com/ZarithG/Back_Gestion_CAF
+              search-paths: CONFIG-DATA

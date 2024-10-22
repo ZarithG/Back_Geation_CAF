@@ -4,6 +4,7 @@ import com.uptc.usersmicroservice.entity.User;
 import com.uptc.usersmicroservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -11,6 +12,9 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     public List<User> getAll(){
         return userRepository.findAll();
