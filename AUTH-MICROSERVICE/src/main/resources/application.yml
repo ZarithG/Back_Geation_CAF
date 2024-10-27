@@ -1,0 +1,59 @@
+server:
+  port: 9091
+
+spring:
+  application:
+    name: AUTH-MICROSERVICE
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3311/AuthenticationDB?createDatabaseIfNotExist=true
+    username: ${USERNAME-DB}
+    password: ${PASSWORD-DB}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT-ID}
+            client-secret: ${CLIENT-SECRET}
+            client-name: Google
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+jwt:
+  secret: Z0xkM0NkVllGd1N0dXZHRzY5MFBBQUlOUmhMRE1vOUhlSjhZNTdhdTZIRzJIQTFJdFhndA==
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
+  instance:
+    hostname: localhost
+
+admin-paths:
+  paths:
+    -
+      uri: "/user/save"
+      method: "POST"
+
+    - uri: "/user/all"
+      method: "GET"
+
+user-paths:
+  paths:
+    -
+      uri: "/user/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+
+
+

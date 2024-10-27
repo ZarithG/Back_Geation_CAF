@@ -38,14 +38,14 @@ public class UserController {
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
-        User user = userService.getUserByEmail(email);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
-    }
+//    @GetMapping("/{email}")
+//    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
+//        User user = userService.getUserByEmail(email);
+//        if (user == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
+//    }
 
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {

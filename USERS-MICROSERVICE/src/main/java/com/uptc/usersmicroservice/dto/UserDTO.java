@@ -10,7 +10,6 @@ import java.util.Date;
 @Setter
 public class UserDTO {
     private String name;
-    private String lastName;
     private String email;
     private String documentType;
     private String documentNumber;

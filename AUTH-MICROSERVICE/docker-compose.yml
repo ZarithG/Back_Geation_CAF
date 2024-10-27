@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  mysql-auth-service:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'AuthenticationDB'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: AuthService*1234
+      MYSQL_ROOT_PASSWORD: AuthService*1234
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_authentication_users_data:/var/lib/mysql
+
+volumes:
+  mysql_authentication_users_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
