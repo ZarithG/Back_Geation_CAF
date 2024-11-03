@@ -20,7 +20,9 @@ public class AuthUser {
     private int id;
     @Column(nullable = false, unique = true)
     private String userName;
-    private String password;
+    private String password = "DEFAULT";
+    private boolean isUserVerified = false;
+    private String pictureUrl;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(joinColumns = @JoinColumn(name = "auth_user_id", referencedColumnName = "id"),

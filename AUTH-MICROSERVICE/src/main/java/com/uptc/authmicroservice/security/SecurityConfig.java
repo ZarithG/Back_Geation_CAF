@@ -21,45 +21,10 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/create","/auth/validate","/auth/google").permitAll()
+                        .requestMatchers("/auth/login", "/auth/create","/auth/validate","/auth/google", "/auth/change/password", "auth/verify/user", "auth/google/login").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(customOAuth2SuccessHandler));
         return http.build();
     }
-
-// ---------------------------------------------------
-
-//    @Bean
-//    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
-//        http.csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(authorizeRequests ->
-//                        authorizeRequests
-//                                .requestMatchers("/auth/login", "/auth/create").permitAll()
-//                                .anyRequest().authenticated())
-//                .oauth2Login(oauth2 ->
-//                        oauth2.userInfoEndpoint(userInfo ->
-//                                userInfo.userService(customOAuth2UserService)
-//                        ).defaultSuccessUrl("/auth/welcome", true)
-//                );
-//
-////                .formLogin(Customizer.withDefaults());
-////                .formLogin(form -> form.defaultSuccessUrl("/auth/welcome", true));
-//        return http.build();
-//    }
-
-//    @Bean
-//    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(authorizeRequests ->
-//                        authorizeRequests
-//                                .requestMatchers("/auth/login", "/auth/create", "/auth/validate").permitAll() // Permite acceso a estos endpoints
-//                                .anyRequest().authenticated() // Requiere autenticación para cualquier otra solicitud
-//                )
-//                .oauth2Login(oauth2 ->
-//                        oauth2.defaultSuccessUrl("/auth/welcome", true)
-//                );
-//
-//        return http.build();
-//    }
 }

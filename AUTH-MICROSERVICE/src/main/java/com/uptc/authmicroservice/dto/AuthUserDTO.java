@@ -17,4 +17,6 @@ public class AuthUserDTO {
     private String userName;
     private String password;
     private Set<Role> roles = new HashSet<>();
+    private boolean isUserVerified = false;
+    private String pictureUrl;
 }

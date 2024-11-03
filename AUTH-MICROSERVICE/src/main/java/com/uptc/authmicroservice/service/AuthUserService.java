@@ -64,6 +64,27 @@ public class AuthUserService {
         return user.orElse(null);
     }
 
+    public AuthUser verifyAuthUser(String userName){
+        AuthUser authUser = getUserByUserName(userName);
+        if (authUser != null){
+            authUser.setUserVerified(true);
+            authUser = authUserRepository.save(authUser);
+        }
+        return authUser;
+    }
+
+    public AuthUser changeAuthUserPassword(String userName, String password){
+        Optional<AuthUser> user = authUserRepository.findByUserName(userName);
+
+        AuthUser userChanged = null;
+        if (user.isPresent()){
+            String encodedPassword = passwordEncoder.encode(password);
+            user.get().setPassword(encodedPassword);
+            userChanged = authUserRepository.save(user.get());
+        }
+        return userChanged;
+    }
+
     public Set<Role> getRolesByUserName(String userName){
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
         return user.get().getRoles();

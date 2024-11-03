@@ -1,23 +1,31 @@
 package com.uptc.authmicroservice.succeshandler;
 
 import com.uptc.authmicroservice.dto.AuthUserDTO;
+import com.uptc.authmicroservice.dto.UserDTO;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
 import com.uptc.authmicroservice.enums.RoleEnum;
+import com.uptc.authmicroservice.mapper.AuthUserMapper;
 import com.uptc.authmicroservice.security.JwtProvider;
 import com.uptc.authmicroservice.service.AuthUserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,16 +38,23 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Autowired
     AuthUserService authUserService;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2AuthenticationToken oauth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User = oauth2AuthenticationToken.getPrincipal();
         String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+        String pictureUrl = oAuth2User.getAttribute("picture");
 
         AuthUser user = authUserService.getUserByUserName(email);
         if (user == null) {
             AuthUserDTO userDTOToCreate = new AuthUserDTO();
             userDTOToCreate.setUserName(email);
+            userDTOToCreate.setPictureUrl(pictureUrl);
+            
             Set<Role> roles = new HashSet<>();
             Role role = new Role();
             role.setId(1);
@@ -48,12 +63,35 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
             userDTOToCreate.setRoles(roles);
             user = authUserService.save(userDTOToCreate);
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmail(email);
+            userDTO.setName(name);
+
+            HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
+            System.out.println("Crear nuevo ");
+
+            ResponseEntity<UserDTO> responseFromNewUser = restTemplate.exchange(
+                    "http://USERS-MICROSERVICE/user/save",
+                    HttpMethod.POST,
+                    requestNewUser,
+                    UserDTO.class
+            );
         }
 
         String token = jwtProvider.createToken(user);
 
-        String targetUrl = UriComponentsBuilder.fromUriString("/auth/google/login")
+        user.setId(0);
+        user.setPassword(null);
+
+        AuthUserDTO userDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(user);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String authUserJson = objectMapper.writeValueAsString(userDTO);
+
+        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/registration/terms")
                 .queryParam("token", token)
+                .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
                 .build().toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

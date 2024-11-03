@@ -6,9 +6,10 @@ import com.uptc.usersmicroservice.mapper.UserMapper;
 import com.uptc.usersmicroservice.repository.UserRepository;
 import com.uptc.usersmicroservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -17,8 +18,12 @@ import java.util.List;
 public class UserController {
     @Autowired
     UserService userService;
+
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -49,7 +54,26 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
-        User user = userRepository.save(UserMapper.INSTANCE.mapUserDTOToUser(userDTO));
+        User existingUser = userRepository.findByEmail(userDTO.getEmail());
+
+        User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
+        if (existingUser != null) {
+            userToAdd.setId(existingUser.getId());
+            HttpEntity<UserDTO> requestVerifyUser = new HttpEntity<>(userDTO);
+
+            ResponseEntity<UserDTO> responseFromVerifyUser = restTemplate.exchange(
+                    "http://AUTH-MICROSERVICE/auth/verify/user",
+                    HttpMethod.POST,
+                    requestVerifyUser,
+                    UserDTO.class
+            );
+
+//            if (!responseFromVerifyUser.getStatusCode().equals(HttpStatus.ACCEPTED)){
+//
+//            }
+        }
+
+        User user = userRepository.save(userToAdd);
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
     }
 }
