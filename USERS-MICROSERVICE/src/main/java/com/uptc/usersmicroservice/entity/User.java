@@ -1,5 +1,6 @@
 package com.uptc.usersmicroservice.entity;
 
+import com.uptc.usersmicroservice.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,20 @@ public class User {
     private String universityCode;
     private Date birthDate;
     private String phoneNumber;
+    private UserTypeEnum userType;
     private String residenceAddress;
     private String department;
     private String city;
+
+    @OneToOne
+    @JoinColumn(name = "emergency_contact_id", referencedColumnName = "id")
+    private EmergencyContact emergencyContact;
+
+    @OneToOne
+    @JoinColumn(name = "medical_information_id", referencedColumnName = "id")
+    private MedicalInformation medicalInformation;
+
+    @OneToOne
+    @JoinColumn(name = "university_information_id", referencedColumnName = "id")
+    private UniversityInformation universityInformation;
 }

@@ -50,11 +50,18 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String pictureUrl = oAuth2User.getAttribute("picture");
 
         AuthUser user = authUserService.getUserByUserName(email);
-        if (user == null) {
+        ResponseEntity<UserDTO> userDTOResponseEntity = restTemplate.exchange(
+                "http://USERS-MICROSERVICE/user/email/" + email,
+                HttpMethod.GET,
+                null,
+                UserDTO.class
+        );
+
+        if (user == null || userDTOResponseEntity.getBody() == null) {
             AuthUserDTO userDTOToCreate = new AuthUserDTO();
             userDTOToCreate.setUserName(email);
             userDTOToCreate.setPictureUrl(pictureUrl);
-            
+
             Set<Role> roles = new HashSet<>();
             Role role = new Role();
             role.setId(1);
@@ -69,7 +76,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             userDTO.setName(name);
 
             HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
-            System.out.println("Crear nuevo ");
 
             ResponseEntity<UserDTO> responseFromNewUser = restTemplate.exchange(
                     "http://USERS-MICROSERVICE/user/save",

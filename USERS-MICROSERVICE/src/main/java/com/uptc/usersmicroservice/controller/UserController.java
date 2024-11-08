@@ -1,9 +1,14 @@
 package com.uptc.usersmicroservice.controller;
 
 import com.uptc.usersmicroservice.dto.UserDTO;
+import com.uptc.usersmicroservice.entity.EmergencyContact;
+import com.uptc.usersmicroservice.entity.Program;
+import com.uptc.usersmicroservice.entity.UniversityInformation;
 import com.uptc.usersmicroservice.entity.User;
 import com.uptc.usersmicroservice.mapper.UserMapper;
+import com.uptc.usersmicroservice.repository.ProgramRepository;
 import com.uptc.usersmicroservice.repository.UserRepository;
+import com.uptc.usersmicroservice.service.ProgramService;
 import com.uptc.usersmicroservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -20,7 +25,10 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    UserRepository userRepository;
+    ProgramService programService;
+
+    @Autowired
+    ProgramRepository programRepository;
 
     @Autowired
     RestTemplate restTemplate;
@@ -34,46 +42,26 @@ public class UserController {
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserListToUserDTOList(usersList));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") int id) {
-        User user = userService.getUserById(id);
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
+        User user = userService.getUserByEmail(email);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
     }
 
-//    @GetMapping("/{email}")
-//    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
-//        User user = userService.getUserByEmail(email);
-//        if (user == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
-//    }
-
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
-        User existingUser = userRepository.findByEmail(userDTO.getEmail());
+        User userToSave = userService.saveUser(userDTO);
+        if (userToSave != null){
+            UserDTO savedUserDTO = UserMapper.INSTANCE.mapUserToUserDTO(userToSave);
+            savedUserDTO.setUniversityInformation(userToSave.getUniversityInformation());
+            savedUserDTO.setMedicalInformation(userToSave.getMedicalInformation());
+            savedUserDTO.setEmergencyContact(userToSave.getEmergencyContact());
 
-        User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
-        if (existingUser != null) {
-            userToAdd.setId(existingUser.getId());
-            HttpEntity<UserDTO> requestVerifyUser = new HttpEntity<>(userDTO);
-
-            ResponseEntity<UserDTO> responseFromVerifyUser = restTemplate.exchange(
-                    "http://AUTH-MICROSERVICE/auth/verify/user",
-                    HttpMethod.POST,
-                    requestVerifyUser,
-                    UserDTO.class
-            );
-
-//            if (!responseFromVerifyUser.getStatusCode().equals(HttpStatus.ACCEPTED)){
-//
-//            }
+            return ResponseEntity.ok(savedUserDTO);
         }
-
-        User user = userRepository.save(userToAdd);
-        return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
+        return ResponseEntity.badRequest().build();
     }
 }

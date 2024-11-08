@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  mysql-caf-microservice:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'CafDB'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: CafMicro*1234
+      MYSQL_ROOT_PASSWORD: CafMicro*1234
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_caf_data:/var/lib/mysql
+
+volumes:
+  mysql_caf_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
