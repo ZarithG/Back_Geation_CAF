@@ -15,6 +15,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class UserDTO {
+    private int id;
     private String name;
     private String email;
     private String documentType;

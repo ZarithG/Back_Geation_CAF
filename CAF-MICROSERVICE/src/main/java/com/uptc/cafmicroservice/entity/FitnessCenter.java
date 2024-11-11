@@ -22,7 +22,7 @@ public class FitnessCenter {
     @OneToOne
     @JoinColumn(name = "sectional_id", referencedColumnName = "id")
     private Sectional sectional;
-    private int coordinator_id;
+    private String coordinatorEmail;
 
     //Revisar
     @OneToMany(mappedBy = "fitnessCenter", cascade = CascadeType.ALL, orphanRemoval = true)

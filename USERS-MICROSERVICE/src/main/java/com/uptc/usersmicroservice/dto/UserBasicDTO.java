@@ -1,4 +1,4 @@
-package com.uptc.authmicroservice.dto;
+package com.uptc.usersmicroservice.dto;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDTO {
+public class UserBasicDTO {
     private int id;
     private String name;
     private String email;

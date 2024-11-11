@@ -59,6 +59,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         if (user == null || userDTOResponseEntity.getBody() == null) {
             AuthUserDTO userDTOToCreate = new AuthUserDTO();
+            System.out.println("EMAIL: " + email);
             userDTOToCreate.setUserName(email);
             userDTOToCreate.setPictureUrl(pictureUrl);
 
@@ -74,6 +75,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             UserDTO userDTO = new UserDTO();
             userDTO.setEmail(email);
             userDTO.setName(name);
+            userDTO.setUserType("STUDENT"); //Revisar
 
             HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
 
@@ -95,7 +97,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         ObjectMapper objectMapper = new ObjectMapper();
         String authUserJson = objectMapper.writeValueAsString(userDTO);
 
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/registration/terms")
+        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
                 .queryParam("token", token)
                 .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
                 .build().toUriString();

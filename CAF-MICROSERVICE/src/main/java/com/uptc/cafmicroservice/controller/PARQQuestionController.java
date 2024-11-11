@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/question")
+@RequestMapping("/caf/question")
 public class PARQQuestionController {
     @Autowired
     private PARQQuestionService parqQuestionService;

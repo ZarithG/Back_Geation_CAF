@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthUserController {
@@ -57,5 +59,16 @@ public class AuthUserController {
         if(authUser == null)
             return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(authUser);
+    }
+
+    @PostMapping("/change-role")
+    public ResponseEntity<AuthBasicUserDTO> changeUserRole(@RequestBody AuthBasicUserDTO authBasicUserDTO){
+        System.out.println("ENTRO CAMBIAR ROL: " + authBasicUserDTO.getUserName() + " - " + new ArrayList<>(authBasicUserDTO.getRoles()).get(0));
+        AuthUser authUser = authUserService.changeAuthUserRole(authBasicUserDTO.getUserName(), new ArrayList<>(authBasicUserDTO.getRoles()).get(0));
+        if(authUser == null)
+            return ResponseEntity.badRequest().build();
+        AuthBasicUserDTO authBasicUserDTOChanged = new AuthBasicUserDTO();
+        authBasicUserDTOChanged.setUserName(authUser.getUserName());
+        return ResponseEntity.ok(authBasicUserDTOChanged);
     }
 }

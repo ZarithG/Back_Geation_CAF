@@ -1,5 +1,6 @@
 package com.uptc.usersmicroservice.controller;
 
+import com.uptc.usersmicroservice.dto.UserBasicDTO;
 import com.uptc.usersmicroservice.dto.UserDTO;
 import com.uptc.usersmicroservice.entity.EmergencyContact;
 import com.uptc.usersmicroservice.entity.Program;
@@ -42,11 +43,24 @@ public class UserController {
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserListToUserDTOList(usersList));
     }
 
+    @GetMapping("/basic/{email}")
+    public ResponseEntity<UserBasicDTO> getBasicUserById(@PathVariable("email") String userEmail){
+        User user = userService.getUserByEmail(userEmail);
+        if (user == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        UserBasicDTO userBasicDTO = new UserBasicDTO();
+        userBasicDTO.setId(user.getId());
+        userBasicDTO.setEmail(user.getEmail());
+        return ResponseEntity.ok(userBasicDTO);
+    }
+
     @GetMapping("/email/{email}")
     public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
         User user = userService.getUserByEmail(email);
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
     }

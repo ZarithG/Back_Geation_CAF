@@ -1,3 +1,11 @@
+INSERT INTO CafDB.sectional (name) VALUES
+("SEDE CENTRAL ESTUDIANTES"),
+("SEDE CENTRAL DOCENTES Y FUNCIONARIOS");
+
+INSERT INTO CafDB.fitness_center (coordinator_email, name, description, sectional_id) VALUES
+("", "CAF ESTUDIANTES - TUNJA", "Centro de acondicionamiento físico para estudiantes", 1),
+("", "CAF DOCENTES Y FUNCIONARIOS - TUNJA", "Centro de acondicionamiento físico para docentes y funcionarios", 2);
+
 INSERT INTO CafDB.parqquestion (question_text) VALUES
 ("¿Le ha dicho su médico alguna vez que padece una enfermedad y que sólo  debe hacer actividad física bajo prescripción médica?"),
 ("¿Ha sufrido o sufre actualmente algún problema cardiaco?"),

@@ -1,5 +1,6 @@
 package com.uptc.cafmicroservice.entity;
 
+import com.uptc.cafmicroservice.enums.InscriptionStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,14 +21,14 @@ public class Inscription {
 
     private int userId;
     private Date inscriptionDate;
-    private String informedConsentPath;
-    private String medicalConsentPath;
-    private String tutorConsentPath;
+
+    @Enumerated(EnumType.STRING)
+    private InscriptionStatusEnum inscriptionStatus;
 
     @ManyToOne
     @JoinColumn(name = "fitness_center_id", nullable = false)
     private FitnessCenter fitnessCenter;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<UserResponse> userResponseList = new HashSet<>();
+    private List<UserResponse> userResponseList;
 }

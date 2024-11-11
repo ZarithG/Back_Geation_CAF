@@ -12,7 +12,7 @@ spring:
     password: 'UsersMicro*1234'
 
 server:
-  port: 9090
+  port: ${PORT:${SERVER_PORT:0}}
 
 eureka:
   client:
@@ -21,4 +21,4 @@ eureka:
     service-url:
       default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
   instance:
-    hostname: localhost
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

@@ -74,19 +74,18 @@ public class UserService {
 
     private MedicalInformation saveUserMedicalInformation(MedicalInformation medicalInformation, UserDTO userDTO){
         if (medicalInformation == null){
-            MedicalInformation medicalInformationToAdd = userDTO.getMedicalInformation();
-            return medicalInformationService.save(medicalInformationToAdd);
+            return medicalInformationService.save(userDTO.getMedicalInformation());
         }
         userDTO.getMedicalInformation().setId(medicalInformation.getId());
         return medicalInformationService.save(userDTO.getMedicalInformation());
     }
 
-    public User saveUser(UserDTO userDTO){
+    public User saveUser(UserDTO userDTO) {
         User existingUser = getUserByEmail(userDTO.getEmail());
         User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
         userToAdd.setUserType(UserTypeEnum.valueOf(userDTO.getUserType()));
 
-        if(existingUser != null) {
+        if (existingUser != null) {
             userToAdd.setId(existingUser.getId());
             userToAdd.setUniversityInformation(saveUserUniversityInformation(existingUser.getUniversityInformation(),
                     userDTO));
@@ -95,7 +94,7 @@ public class UserService {
             userToAdd.setMedicalInformation(saveUserMedicalInformation(existingUser.getMedicalInformation(),
                     userDTO));
 
-            if (existingUser.getUniversityCode() == null){
+            if (existingUser.getUniversityCode() == null) {
                 HttpEntity<UserDTO> requestVerifyUser = new HttpEntity<>(userDTO);
                 ResponseEntity<UserDTO> responseFromVerifyUser = restTemplate.exchange(
                         "http://AUTH-MICROSERVICE/auth/verify/user",

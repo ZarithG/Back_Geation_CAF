@@ -5,6 +5,7 @@ import com.uptc.authmicroservice.dto.RequestDTO;
 import com.uptc.authmicroservice.dto.TokenDTO;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
+import com.uptc.authmicroservice.enums.RoleEnum;
 import com.uptc.authmicroservice.repository.AuthUserRepository;
 import com.uptc.authmicroservice.repository.RoleRepository;
 import com.uptc.authmicroservice.security.JwtProvider;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -87,6 +89,18 @@ public class AuthUserService {
 
     public Set<Role> getRolesByUserName(String userName){
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
-        return user.get().getRoles();
+        return user.map(AuthUser::getRoles).orElse(null);
+    }
+
+    public AuthUser changeAuthUserRole(String userName, RoleEnum roleEnum){
+        Optional<AuthUser> user = authUserRepository.findByUserName(userName);
+        if (user.isPresent()){
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleRepository.findByRoleName(roleEnum));
+
+            user.get().setRoles(roles);
+            return authUserRepository.save(user.get());
+        }
+        return null;
     }
 }

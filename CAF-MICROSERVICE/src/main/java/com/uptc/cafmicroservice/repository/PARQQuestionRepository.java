@@ -4,4 +4,5 @@ import com.uptc.cafmicroservice.entity.PARQQuestion;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PARQQuestionRepository extends JpaRepository<PARQQuestion, Integer> {
+    PARQQuestion findById(int id);
 }
