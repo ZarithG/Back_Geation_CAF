@@ -65,6 +65,8 @@ public class DayAssignmentService {
         return dayAssignmentRepository.findDayAssignmentByDayAndFitnessCenter(day, fitnessCenterId);
     }
 
+
+
     public DayAssignmentDTO mapDayAssignmenToDTOWithShifts(DayAssignment dayAssignment, List<Shift> shifts) {
         DayAssignmentDTO dto = DayAssignmentMapper.INSTANCE.mapDayAssignmentToDayAssignmentDTO(dayAssignment);
         List<ShiftDTO> shiftDTOs = shifts.stream()

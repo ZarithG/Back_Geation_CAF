@@ -24,4 +24,5 @@ public class PARQQuestionController {
         }
         return ResponseEntity.ok(parqQuestionsList);
     }
+
 }

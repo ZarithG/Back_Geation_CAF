@@ -3,14 +3,17 @@ package com.uptc.shiftmicroservice.service;
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.uptc.shiftmicroservice.dto.DayAssignmentDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
+import com.uptc.shiftmicroservice.entity.Day;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Shift;
+import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.mapper.ShiftMapper;
 import com.uptc.shiftmicroservice.repository.DayAssignmentRepository;
 import com.uptc.shiftmicroservice.repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,8 +22,10 @@ public class ShiftService {
 
     @Autowired
     ShiftRepository shiftRepository;
+
     @Autowired
     DayAssignmentRepository dayAssignmentRepository;
+
 
     //Método que retorna un Shift de la Base de datos
     public  Optional<Shift> findShiftById(ShiftDTO shiftDTO){
@@ -102,6 +107,9 @@ public class ShiftService {
 
     }
 
+    public void saveAllShifts(DayAssignment dayAssignment,List<Shift> shifts){
+
+    }
     public Optional<Shift> editShift(DayAssignment dayAssignment, Shift newShift) {
         NavigableSet<Shift> shifts = getOrderedShiftsByDayAssignment(dayAssignment.getId());
         Shift previousShift = shifts.lower(newShift);
@@ -154,5 +162,14 @@ public class ShiftService {
     public Boolean deleteShift(int dayAssignment, ShiftDTO shiftToDelete){
         return (shiftRepository.deleteByIdAndDayAssignmentId(shiftToDelete.getId(),dayAssignment)) > 0;
     }
+
+    //Método que retorna la lista de turnos disponibles para un día en un CAF
+    public List<ShiftDTO> getAvailableShiftsForTodayByFitnessCenter(){
+        List<ShiftDTO> shiftDTOs = new ArrayList<>();
+
+
+        return shiftDTOs;
+    }
+
 
 }

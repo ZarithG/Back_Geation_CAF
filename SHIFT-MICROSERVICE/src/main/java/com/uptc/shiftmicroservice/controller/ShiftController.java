@@ -4,6 +4,7 @@ import com.uptc.shiftmicroservice.dto.DayAssignmentDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Shift;
+import com.uptc.shiftmicroservice.errors.ConflictResponse;
 import com.uptc.shiftmicroservice.mapper.DayAssignmentMapper;
 import com.uptc.shiftmicroservice.mapper.ShiftMapper;
 import com.uptc.shiftmicroservice.service.DayAssignmentService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,46 @@ public class ShiftController {
         }
     }
 
+//    @PostMapping("/saveShift")
+//    public ResponseEntity<?> saveShift(@RequestBody List<DayAssignmentDTO> dayAssignmentDTOList){
+//        List<ConflictResponse> conflictResponses = new ArrayList<>();
+//        List<Shift> shiftsToSaveList = new ArrayList<>();
+//
+//        for(DayAssignmentDTO dayAssignmentDTO : dayAssignmentDTOList){
+//            System.out.println(dayAssignmentDTO.getDay());
+//            DayAssignment dayAssignment = dayAssignmentService.validarDayAssignment(dayAssignmentDTO);
+//
+//            for(ShiftDTO shiftDTO : dayAssignmentDTO.getShifts()){
+//                if(!shiftService.verifyStartAndEndTime(shiftDTO)) {
+//                    conflictResponses.add(new ConflictResponse(
+//                            dayAssignmentDTO.getId(),
+//                            shiftDTO.getId(),
+//                            "Turno con horario incorrecto: Inicio: " + shiftDTO.getStartTime() + ", Fin: " + shiftDTO.getEndTime()
+//                    ));
+//                    //shiftsToSaveList.add(ShiftMapper.INSTANCE.shiftDTOToShift(shiftDTO);
+//                }
+//                Optional<Shift> shiftCreated = shiftService.addShift(dayAssignment, ShiftMapper.INSTANCE.shiftDTOToShift(shiftDTO));
+//                System.out.println("INICIO"+shiftDTO.getStartTime());
+//                System.out.println("FIN"+shiftDTO.getEndTime());
+//                if (shiftCreated.isEmpty()) {
+//                    conflictResponses.add(new ConflictResponse(
+//                            dayAssignmentDTO.getId(),
+//                            shiftDTO.getId(),
+//                            "Conflicto de solapamiento: Inicio: " + shiftDTO.getStartTime() + ", Fin: " + shiftDTO.getEndTime()
+//                    ));
+//                }
+//            }
+////            if(shiftsToSaveList.size() == dayAssignmentDTO.getShifts().size())
+////                shiftService.saveAllShifts(dayAssignment, shiftsToSaveList);
+//
+//        }
+//        if (conflictResponses.isEmpty()) {
+//            return ResponseEntity.ok("Todos los turnos se han registrado correctamente.");
+//        } else {
+//            return ResponseEntity.badRequest().body(conflictResponses);
+//        }
+//    }
+
     @PostMapping("/saveShift")
     public ResponseEntity<ShiftDTO> saveShift(@RequestBody DayAssignmentDTO dayAssignmentDTO){
         if(shiftService.verifyStartAndEndTime(dayAssignmentDTO.getShifts().get(0))) {
@@ -56,24 +98,24 @@ public class ShiftController {
         }else {
             System.out.println("HORA INICIO Y FIN INCORRECTAS");
         }
-            return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping("/editShift")
-    public ResponseEntity<ShiftDTO> editShift(@RequestBody DayAssignmentDTO dayAssignmentDTO){
-        Optional<Shift> shiftFind = shiftService.findShiftById(dayAssignmentDTO.getShifts().get(0));
-        if(shiftFind.isPresent()) {
-            Optional<Shift>  editShift = shiftService.editShift(DayAssignmentMapper.INSTANCE.mapDayAssignmentDTOToDayAssignment(dayAssignmentDTO),
-                    ShiftMapper.INSTANCE.shiftDTOToShift(dayAssignmentDTO.getShifts().get(0)));
-            if(editShift.isPresent()){
-                return ResponseEntity.ok(ShiftMapper.INSTANCE.shiftToShiftDTO(editShift.get()));
-            }else{
-                System.out.println("Hay solapamiento en el turno nuevo");
-                return ResponseEntity.notFound().build();
-            }
-        }
-       return ResponseEntity.notFound().build();
-    }
+//    @PutMapping("/editShift")
+//    public ResponseEntity<ShiftDTO> editShift(@RequestBody DayAssignmentDTO dayAssignmentDTO){
+//        Optional<Shift> shiftFind = shiftService.findShiftById(dayAssignmentDTO.getShifts().get(0));
+//        if(shiftFind.isPresent()) {
+//            Optional<Shift>  editShift = shiftService.editShift(DayAssignmentMapper.INSTANCE.mapDayAssignmentDTOToDayAssignment(dayAssignmentDTO),
+//                    ShiftMapper.INSTANCE.shiftDTOToShift(dayAssignmentDTO.getShifts().get(0)));
+//            if(editShift.isPresent()){
+//                return ResponseEntity.ok(ShiftMapper.INSTANCE.shiftToShiftDTO(editShift.get()));
+//            }else{
+//                System.out.println("Hay solapamiento en el turno nuevo");
+//                return ResponseEntity.notFound().build();
+//            }
+//        }
+//       return ResponseEntity.notFound().build();
+//    }
 
     @PutMapping("/deleteShift")
     public ResponseEntity<ShiftDTO> deleteShift(@RequestBody DayAssignmentDTO dayAssignmentDTO){

@@ -12,12 +12,16 @@ import java.util.Optional;
 
 public interface ShiftRepository extends JpaRepository<Shift,Integer> {
 
+    //Consulata para obtener un turno específico
     Optional<Shift> findByIdAndDayAssignmentId(int shiftId,int dayAssignmentId);
     // Método para obtener los Shifts asociados a un DayAssignment específico
     List<Shift> findByDayAssignment(DayAssignment dayAssignment);
 
+    //Consulta para listar los turnos de un Día de agendamiento
     List<Shift> findByDayAssignmentId(int dayAssignmentId);
 
+
+    //Consulta para eliminar un turno
     @Transactional
     @Modifying
     @Query("DELETE FROM Shift s WHERE s.id = :shiftId AND s.dayAssignment.id = :dayAssignmentId")
