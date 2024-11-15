@@ -19,4 +19,5 @@ public class AuthUserDTO {
     private Set<Role> roles = new HashSet<>();
     private boolean isUserVerified = false;
     private String pictureUrl;
+    private TokenDTO token;
 }

@@ -22,7 +22,8 @@ public class SecurityConfig{
     private static final String[] PUBLIC_ROUTES = {
             "/auth/login", "/auth/create", "/auth/validate", "/auth/google",
             "/auth/change/password", "/auth/change-role",
-            "/auth/verify/user", "/auth/google/login"
+            "/auth/verify/user", "/auth/google/login",
+            "auth/change-wellbeing-director"
     };
 
 

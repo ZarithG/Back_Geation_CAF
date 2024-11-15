@@ -1,6 +1,7 @@
 package com.uptc.authmicroservice.succeshandler;
 
 import com.uptc.authmicroservice.dto.AuthUserDTO;
+import com.uptc.authmicroservice.dto.TokenDTO;
 import com.uptc.authmicroservice.dto.UserDTO;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
@@ -50,58 +51,70 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String pictureUrl = oAuth2User.getAttribute("picture");
 
         AuthUser user = authUserService.getUserByUserName(email);
-        ResponseEntity<UserDTO> userDTOResponseEntity = restTemplate.exchange(
-                "http://USERS-MICROSERVICE/user/email/" + email,
-                HttpMethod.GET,
-                null,
-                UserDTO.class
-        );
+        ResponseEntity<UserDTO> userDTOResponseEntity;
 
-        if (user == null || userDTOResponseEntity.getBody() == null) {
-            AuthUserDTO userDTOToCreate = new AuthUserDTO();
-            System.out.println("EMAIL: " + email);
-            userDTOToCreate.setUserName(email);
-            userDTOToCreate.setPictureUrl(pictureUrl);
+        try {
 
-            Set<Role> roles = new HashSet<>();
-            Role role = new Role();
-            role.setId(1);
-            role.setRoleName(RoleEnum.ROLE_USER);
-            roles.add(role);
-
-            userDTOToCreate.setRoles(roles);
-            user = authUserService.save(userDTOToCreate);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setEmail(email);
-            userDTO.setName(name);
-            userDTO.setUserType("STUDENT"); //Revisar
-
-            HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
-
-            ResponseEntity<UserDTO> responseFromNewUser = restTemplate.exchange(
-                    "http://USERS-MICROSERVICE/user/save",
-                    HttpMethod.POST,
-                    requestNewUser,
+            userDTOResponseEntity = restTemplate.exchange(
+                    "http://USERS-MICROSERVICE/user/email/" + email,
+                    HttpMethod.GET,
+                    null,
                     UserDTO.class
             );
+
+            if (user == null || userDTOResponseEntity.getBody() == null) {
+                AuthUserDTO userDTOToCreate = new AuthUserDTO();
+                System.out.println("EMAIL: " + email);
+                userDTOToCreate.setUserName(email);
+                userDTOToCreate.setPictureUrl(pictureUrl);
+
+                Set<Role> roles = new HashSet<>();
+                Role role = new Role();
+                role.setId(1);
+                role.setRoleName(RoleEnum.ROLE_USER);
+                roles.add(role);
+
+                userDTOToCreate.setRoles(roles);
+                user = authUserService.save(userDTOToCreate);
+
+                UserDTO userDTO = new UserDTO();
+                userDTO.setEmail(email);
+                userDTO.setName(name);
+                userDTO.setUserType("STUDENT"); //Revisar
+
+                HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
+
+                ResponseEntity<UserDTO> responseFromNewUser = restTemplate.exchange(
+                        "http://USERS-MICROSERVICE/user/save",
+                        HttpMethod.POST,
+                        requestNewUser,
+                        UserDTO.class
+                );
+            }
+
+            String token = jwtProvider.createToken(user);
+
+            user.setId(0);
+            user.setPassword(null);
+
+            AuthUserDTO userDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(user);
+            TokenDTO tokenDTO = new TokenDTO();
+            tokenDTO.setToken(token);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String authUserJson = objectMapper.writeValueAsString(userDTO);
+
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
+                    .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
+                    .build().toUriString();
+
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        }catch (Exception e){
+            authUserService.logout(request, response);
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000")
+                    .build().toUriString();
+
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
-
-        String token = jwtProvider.createToken(user);
-
-        user.setId(0);
-        user.setPassword(null);
-
-        AuthUserDTO userDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(user);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String authUserJson = objectMapper.writeValueAsString(userDTO);
-
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
-                .queryParam("token", token)
-                .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
-                .build().toUriString();
-
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }

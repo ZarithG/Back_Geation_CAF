@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: SHIFT-MICROSERVICE
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3313/ShiftDB?createDatabaseIfNotExist=true
+    username: admin
+    password: 'ShiftMicro*1234'
+
+server:
+  port: 9090
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
+  instance:
+    hostname: localhost

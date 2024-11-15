@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InscriptionRepository extends JpaRepository<Inscription, Integer> {
+    Inscription findInscriptionById(int id);
+
     @Query("SELECT i FROM Inscription i WHERE i.fitnessCenter.id = :fitnessCenterId")
     List<Inscription> findFitnessCenterInscriptions(int fitnessCenterId);
 

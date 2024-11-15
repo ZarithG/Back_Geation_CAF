@@ -9,11 +9,15 @@ import com.uptc.authmicroservice.enums.RoleEnum;
 import com.uptc.authmicroservice.repository.AuthUserRepository;
 import com.uptc.authmicroservice.repository.RoleRepository;
 import com.uptc.authmicroservice.security.JwtProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,6 +56,15 @@ public class AuthUserService {
         return null;
     }
 
+    public void logout(HttpServletRequest request, HttpServletResponse response){
+        request.getSession().invalidate();
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
     public TokenDTO validate(String token, RequestDTO requestDTO) {
         if(!jwtProvider.validate(token, requestDTO))
             return null;
@@ -76,8 +89,9 @@ public class AuthUserService {
     }
 
     public AuthUser changeAuthUserPassword(String userName, String password){
+        System.out.println("Username:" +  userName);
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
-
+        System.out.println("Esta el usuario:" + user.isPresent());
         AuthUser userChanged = null;
         if (user.isPresent()){
             String encodedPassword = passwordEncoder.encode(password);
@@ -102,5 +116,21 @@ public class AuthUserService {
             return authUserRepository.save(user.get());
         }
         return null;
+    }
+
+    public AuthUser changeWellbeingDirector(String userName){
+        List<AuthUser> actualWellbeingDirector = authUserRepository.findByRoleName(RoleEnum.ROLE_WELLBEING_DIRECTOR);
+        if(!actualWellbeingDirector.isEmpty()){
+            AuthUser changeActualDirectorRol = changeAuthUserRole(actualWellbeingDirector.get(0).getUserName(), RoleEnum.ROLE_USER);
+            if(changeActualDirectorRol == null){
+                return null;
+            }
+        }
+
+        AuthUser newWellbeingDirector = changeAuthUserRole(userName, RoleEnum.ROLE_WELLBEING_DIRECTOR);
+        if(newWellbeingDirector == null){
+            return null;
+        }
+        return newWellbeingDirector;
     }
 }

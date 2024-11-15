@@ -48,7 +48,6 @@ public class FitnessCenterService {
                 );
 
                 if (responseChangeCoordinatorToUser.getStatusCode() != HttpStatus.OK) {
-                    System.out.println("ERRROR CORDINADOR QUE HABIA");
                     return null;
                 }
             }
@@ -67,14 +66,12 @@ public class FitnessCenterService {
             );
 
             if (responseChangeUserToCoordinator.getStatusCode() != HttpStatus.OK){
-                System.out.println("ERRROR CAMBIAR NUEVO COORDINADOR");
                 return null;
             }
 
             fitnessCenter.setCoordinatorEmail(userEmail);
             return fitnessCenterRepository.save(fitnessCenter);
         }
-        System.out.println("ERRROR NO EXISTE CAF");
         return null;
     }
 }

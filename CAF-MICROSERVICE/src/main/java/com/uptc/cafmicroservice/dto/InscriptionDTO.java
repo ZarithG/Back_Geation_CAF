@@ -25,9 +25,4 @@ public class InscriptionDTO {
 
     private FitnessCenterDTO fitnessCenterDTO;
     private List<UserResponseDTO> userResponseDTOList;
-
-    // Atributo con los archivos de los consentimientos
-    private MultipartFile[] files;
-    // Atributo con los tipos de los archivos (RISKS, MEDICAL, TUTOR)
-    private ConsentTypeEnum[] consentTypes;
 }

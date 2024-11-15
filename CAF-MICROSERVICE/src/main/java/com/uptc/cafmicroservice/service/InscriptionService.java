@@ -1,33 +1,28 @@
 package com.uptc.cafmicroservice.service;
 
 import com.uptc.cafmicroservice.dto.InscriptionDTO;
+import com.uptc.cafmicroservice.dto.UserBasicDTO;
 import com.uptc.cafmicroservice.dto.UserResponseDTO;
-import com.uptc.cafmicroservice.entity.Consent;
 import com.uptc.cafmicroservice.entity.FitnessCenter;
 import com.uptc.cafmicroservice.entity.Inscription;
 import com.uptc.cafmicroservice.entity.UserResponse;
-import com.uptc.cafmicroservice.enums.ConsentTypeEnum;
 import com.uptc.cafmicroservice.enums.InscriptionStatusEnum;
 import com.uptc.cafmicroservice.mapper.InscriptionMapper;
 import com.uptc.cafmicroservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
 public class InscriptionService {
     @Autowired
     InscriptionRepository inscriptionRepository;
-
-    @Autowired
-    ConsentRepository consentRepository;
 
     @Autowired
     UserResponseRepository responseRepository;
@@ -50,6 +45,25 @@ public class InscriptionService {
         }
     }
 
+    public List<InscriptionDTO> getAllUserInscriptions(String email){
+        ResponseEntity<UserBasicDTO> response = restTemplate.exchange(
+                "http://USERS-MICROSERVICE/user/basic/" + email,
+                HttpMethod.GET,
+                new HttpEntity<>(null),
+                UserBasicDTO.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK){
+            if(response.getBody() != null){
+                return InscriptionMapper.INSTANCE.mapInscriptionListToInscriptionDTOList(inscriptionRepository.findAllUserInscriptions(response.getBody().getId()));
+            }else {
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
+
     public InscriptionDTO inscribeUserInFitnessCenter(InscriptionDTO inscriptionDTO){
         Optional<FitnessCenter> fitnessCenterOptional = fitnessCenterRepository.findById(inscriptionDTO.getFitnessCenterDTO().getId());
         Inscription inscription = new Inscription();
@@ -62,76 +76,32 @@ public class InscriptionService {
             inscription.setUserResponseList(convertUserResponsesDTOToUserResponses(inscriptionDTO.getUserResponseDTOList()));
 
             inscription = inscriptionRepository.save(inscription);
-
-            if(inscription.getId() != 0){
-                boolean wereConsentFilesSaveSuccessfully = saveConsentFiles(inscription, inscriptionDTO.getFiles(), inscriptionDTO.getConsentTypes());
-                if (!wereConsentFilesSaveSuccessfully){
-                    return null;
-                }
-            }
         }else {
             return null;
         }
         return InscriptionMapper.INSTANCE.mapInscriptionToInscriptionDTO(inscription);
     }
 
-    private List<UserResponse> convertUserResponsesDTOToUserResponses(List<UserResponseDTO> userResponseDTOList){
+    public Inscription changeUserInscription(int inscriptionId, InscriptionStatusEnum inscriptionStatus){
+        Inscription inscription = inscriptionRepository.findInscriptionById(inscriptionId);
+        if(inscription.getId() != 0){
+            inscription.setInscriptionStatus(inscriptionStatus);
+            inscription = inscriptionRepository.save(inscription);
+        }else{
+            return null;
+        }
+        return inscription;
+    }
+
+    private List<UserResponse> convertUserResponsesDTOToUserResponses(List<UserResponseDTO> userResponseDTOList) {
         List<UserResponse> userResponses = new ArrayList<>();
-        for (UserResponseDTO  userResponseDTO : userResponseDTOList){
+        for (UserResponseDTO userResponseDTO : userResponseDTOList) {
             UserResponse userResponse = new UserResponse();
             userResponse.setParqQuestion(parqQuestionRepository.findById(userResponseDTO.getParqQuestionDTO().getId()));
             userResponse.setQuestionAnswer(userResponseDTO.isQuestionAnswer());
+            userResponses.add(userResponse);
         }
+        responseRepository.saveAll(userResponses);
         return userResponses;
-    }
-
-    private boolean saveConsentFiles(Inscription inscription, MultipartFile[] files, ConsentTypeEnum[] types) {
-        for (int i = 0; i < files.length; i++) {
-            MultipartFile file = files[i];
-            ConsentTypeEnum type = types[i];
-
-            String filePath = saveFileInConsentTypeFolder(inscription.getInscriptionDate(),
-                    inscription.getUserId(), file, type);
-            if(!filePath.isEmpty()){
-                Consent consent = new Consent();
-                consent.setConsentType(type);
-                consent.setFilePath(filePath);
-                consent.setInscription(inscription);
-                consent = consentRepository.save(consent);
-
-                if(consent.getId() == 0){
-                    return false;
-                }
-            }else{
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private String saveFileInConsentTypeFolder(Date inscriptionDate, int userId, MultipartFile file, ConsentTypeEnum consentType){
-        String filePath = "";
-        switch (consentType) {
-            case RISKS:
-                filePath = "risk-consents/";
-                break;
-            case TUTOR:
-                filePath = "tutor-consents/";
-                break;
-            case MEDICAL:
-                filePath = "medical-consents/";
-                break;
-            default:
-                return filePath;
-        }
-        filePath += userId + "_" + inscriptionDate;
-
-        try {
-            Path path = Paths.get(filePath);
-            Files.write(path, file.getBytes());
-        }catch (IOException e){
-            return "";
-        }
-        return filePath;
     }
 }

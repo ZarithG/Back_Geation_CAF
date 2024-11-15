@@ -2,13 +2,9 @@ package com.uptc.usersmicroservice.controller;
 
 import com.uptc.usersmicroservice.dto.UserBasicDTO;
 import com.uptc.usersmicroservice.dto.UserDTO;
-import com.uptc.usersmicroservice.entity.EmergencyContact;
-import com.uptc.usersmicroservice.entity.Program;
-import com.uptc.usersmicroservice.entity.UniversityInformation;
 import com.uptc.usersmicroservice.entity.User;
 import com.uptc.usersmicroservice.mapper.UserMapper;
 import com.uptc.usersmicroservice.repository.ProgramRepository;
-import com.uptc.usersmicroservice.repository.UserRepository;
 import com.uptc.usersmicroservice.service.ProgramService;
 import com.uptc.usersmicroservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/basic/{email}")
-    public ResponseEntity<UserBasicDTO> getBasicUserById(@PathVariable("email") String userEmail){
+    public ResponseEntity<UserBasicDTO> getBasicUserByEmail(@PathVariable("email") String userEmail){
         User user = userService.getUserByEmail(userEmail);
         if (user == null) {
             return ResponseEntity.noContent().build();
@@ -67,6 +63,7 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
+        System.out.println("LLEGO A GUARDAR");
         User userToSave = userService.saveUser(userDTO);
         if (userToSave != null){
             UserDTO savedUserDTO = UserMapper.INSTANCE.mapUserToUserDTO(userToSave);

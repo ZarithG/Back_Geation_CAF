@@ -5,6 +5,9 @@ import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.mapper.AuthUserMapper;
 import com.uptc.authmicroservice.security.JwtProvider;
 import com.uptc.authmicroservice.service.AuthUserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +25,26 @@ public class AuthUserController {
     JwtProvider jwtProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@RequestBody AuthUserDTO dto){
+    public ResponseEntity<AuthUserDTO> login(@RequestBody AuthUserDTO dto){
         TokenDTO tokenDto = authUserService.login(dto);
         if(tokenDto == null)
             return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(tokenDto);
+
+        AuthUser authUser = authUserService.getUserByUserName(dto.getUserName());
+        AuthUserDTO authUserDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser);
+        authUserDTO.setRoles(authUser.getRoles());
+        authUserDTO.setToken(tokenDto);
+        authUserDTO.setPassword(null);
+        authUserDTO.setUserVerified(authUser.isUserVerified());
+
+        return ResponseEntity.ok(authUserDTO);
     }
+
+    @RequestMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        authUserService.logout(request, response);
+    }
+
 
     @PostMapping("/validate")
     public ResponseEntity<TokenDTO> validate(@RequestParam String token, @RequestBody RequestDTO requestDTO){
@@ -63,8 +80,17 @@ public class AuthUserController {
 
     @PostMapping("/change-role")
     public ResponseEntity<AuthBasicUserDTO> changeUserRole(@RequestBody AuthBasicUserDTO authBasicUserDTO){
-        System.out.println("ENTRO CAMBIAR ROL: " + authBasicUserDTO.getUserName() + " - " + new ArrayList<>(authBasicUserDTO.getRoles()).get(0));
         AuthUser authUser = authUserService.changeAuthUserRole(authBasicUserDTO.getUserName(), new ArrayList<>(authBasicUserDTO.getRoles()).get(0));
+        if(authUser == null)
+            return ResponseEntity.badRequest().build();
+        AuthBasicUserDTO authBasicUserDTOChanged = new AuthBasicUserDTO();
+        authBasicUserDTOChanged.setUserName(authUser.getUserName());
+        return ResponseEntity.ok(authBasicUserDTOChanged);
+    }
+
+    @PostMapping("/change-wellbeing-director")
+    public ResponseEntity<AuthBasicUserDTO> changeWellbeingDirector(@RequestBody AuthBasicUserDTO authBasicUserDTO){
+        AuthUser authUser = authUserService.changeWellbeingDirector(authBasicUserDTO.getUserName());
         if(authUser == null)
             return ResponseEntity.badRequest().build();
         AuthBasicUserDTO authBasicUserDTOChanged = new AuthBasicUserDTO();

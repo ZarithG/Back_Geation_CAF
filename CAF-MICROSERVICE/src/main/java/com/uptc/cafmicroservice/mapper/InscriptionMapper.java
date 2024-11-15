@@ -1,8 +1,6 @@
 package com.uptc.cafmicroservice.mapper;
 
-import com.uptc.cafmicroservice.dto.FitnessCenterDTO;
 import com.uptc.cafmicroservice.dto.InscriptionDTO;
-import com.uptc.cafmicroservice.entity.FitnessCenter;
 import com.uptc.cafmicroservice.entity.Inscription;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -16,6 +14,6 @@ public interface InscriptionMapper {
     Inscription mapInscriptionDTOToInscription(InscriptionDTO inscriptionDTO);
     InscriptionDTO mapInscriptionToInscriptionDTO(Inscription inscription);
 
-    List<FitnessCenterDTO> mapInscriptionListToInscriptionDTOList(List<FitnessCenter> userList);
-    List<FitnessCenter> mapInscriptionDTOListToInscriptionList(List<FitnessCenterDTO> userDTOList);
+    List<InscriptionDTO> mapInscriptionListToInscriptionDTOList(List<Inscription> inscriptionList);
+    List<Inscription> mapInscriptionDTOListToInscriptionList(List<InscriptionDTO> inscriptionDTOList);
 }

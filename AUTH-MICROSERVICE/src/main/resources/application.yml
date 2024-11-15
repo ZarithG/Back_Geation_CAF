@@ -67,5 +67,11 @@ user-paths:
     - uri: "/caf/inscription/inscribe-user"
       method: "POST"
 
+    - uri: "/user/save"
+      method: "POST"
+
+    - uri: "/caf/inscription/inscribe-user"
+      method: "POST"
+
 
 
