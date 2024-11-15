@@ -21,8 +21,6 @@ public class ConsentController {
     @Autowired
     ConsentService consentService;
 
-//    private final HttpServletRequest request;
-
     @PostMapping("/upload/{inscriptionId}")
     public ResponseEntity<Boolean> uploadInscriptionFiles(@PathVariable int inscriptionId, @RequestParam("inscriptionFiles") MultipartFile[] files, @RequestParam("fileTypes") ConsentTypeEnum[] types){
         boolean wasCorrectlyUploaded = consentService.saveConsentFiles(inscriptionId, files, types);

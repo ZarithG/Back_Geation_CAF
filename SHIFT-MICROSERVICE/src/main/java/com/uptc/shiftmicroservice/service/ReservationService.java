@@ -1,20 +1,16 @@
 package com.uptc.shiftmicroservice.service;
 
 import com.uptc.shiftmicroservice.dto.ReservationDTO;
-import com.uptc.shiftmicroservice.dto.ShiftDTO;
-import com.uptc.shiftmicroservice.entity.Day;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Reservation;
 import com.uptc.shiftmicroservice.entity.ShiftInstance;
-import com.uptc.shiftmicroservice.mapper.ShiftMapper;
+import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import com.uptc.shiftmicroservice.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,19 +23,30 @@ public class ReservationService {
     @Autowired
     private ShiftInstanceService shiftInstanceService;
 
-
-
     @Autowired
     private ShiftService shiftService;
 
-    //Verificar el número de reservas para un shiftInstance específico
-    public int countReversesToShiftIntance(ShiftInstance shiftInstance){
-        //
-        return reservationRepository.countByshiftInstance(shiftInstance);
+    public void reserveShiftForUser(ReservationDTO reservationDTO){
+        Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
+        int totalReserves = countReversesToShiftIntance(shiftInstance.get());
+        //Verificar los cupos disponibles
+        if((shiftInstance.get().getPlaceAvailable() - totalReserves) > 0){
+            List<Reservation> reservation = reservationRepository.findAllByReservationEnumNotAttendedAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
+
+            if(reservation.isEmpty()){
+
+
+            }
+        }else{
+
+            System.out.println("Turnos llenos");
+        }
     }
 
-
-
+    //Verificar el número de reservas para un shiftInstance específico
+    public int countReversesToShiftIntance(ShiftInstance shiftInstance){
+        return reservationRepository.countByShiftInstance(shiftInstance);
+    }
 
     //Método para validar que las fechas y hora para la reservación sea menor a la fecha y hora de finalización del turno
     public int isReserveDateLowEndTimeShiftInstance(LocalDateTime reserveDate, LocalDateTime endDateTime){
@@ -54,14 +61,13 @@ public class ReservationService {
 
     public Reservation reserveShift(ReservationDTO newReservationDTO) {
         Reservation reservation = new Reservation();
-        reservation.setAttendance(0);
+        reservation.setReservationEnum(ReservationEnum.NOT_ATTENDED);
 
         return reservationRepository.save(reservation);
     }
 
     public Boolean existReservationToSameDay(int idUser, int idShift) {
         Boolean exist = false;
-        //Consultar el turno para extraer el id del day-assignmet
 
         return exist;
     }

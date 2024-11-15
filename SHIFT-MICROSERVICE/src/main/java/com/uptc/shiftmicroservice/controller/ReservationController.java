@@ -40,25 +40,7 @@ public class ReservationController {
 
     @GetMapping("/reserve-shift")
     public ResponseEntity<ReservationDTO> reserveShiftForUser(@RequestBody ReservationDTO reservationDTO){
-        Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
-        //Cupos ocupados
-        int totalReserves = reservationService.countReversesToShiftIntance(shiftInstance.get());
-        //Verificar los cupos disponibles
-        if((shiftInstance.get().getPlaceAvailable() - totalReserves) > 0){
-            //Crear reservación
-            //Validar que la fecha actual de la reserva sea menor a la fecha de fin del turno
-            LocalDateTime endDateTime = LocalDateTime.of(shiftInstance.get().getDate(), shiftInstance.get().getEndTime());
-            if(reservationService.isReserveDateLowEndTimeShiftInstance(reservationDTO.getDateReservation(),endDateTime ) > 0){
 
-                //Validar reservaciones en el mismo día
-
-            }else{
-                System.out.println("Ya no puede agendar, el turno terminó");
-            }
-        }else{
-
-            System.out.println("Turnos llenos");
-        }
         return ResponseEntity.ok(reservationDTO);
     }
 

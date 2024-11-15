@@ -20,21 +20,20 @@ public class ShiftInstance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private int idDayAssignment;
+    @ManyToOne
+    @JoinColumn(name = "day_assignment_id", nullable = false)
+    private DayAssignment dayAssignment;
 
     private Day day;
     private LocalDate date;
 
-    //@Temporal(TemporalType.TIME)
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime startTime;
 
-    //@Temporal(TemporalType.TIME)
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
 
     private int placeAvailable;
 
-    private int state;
+    private boolean state;
 }

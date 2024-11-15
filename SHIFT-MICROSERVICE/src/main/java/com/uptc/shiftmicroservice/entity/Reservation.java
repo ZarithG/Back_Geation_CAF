@@ -1,5 +1,6 @@
 package com.uptc.shiftmicroservice.entity;
 
+import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,5 +28,6 @@ public class Reservation {
 
     private LocalDateTime dateReservation;
 
-    private int attendance;
+    @Enumerated(EnumType.STRING)
+    private ReservationEnum reservationEnum;
 }

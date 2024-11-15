@@ -1,6 +1,7 @@
 package com.uptc.shiftmicroservice.dto;
 
 import com.uptc.shiftmicroservice.entity.Shift;
+import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,5 +24,5 @@ public class ReservationDTO {
 
         private LocalDateTime dateReservation;
 
-        private int attendance;
+        private ReservationEnum reservationEnum;
 }
