@@ -25,6 +25,7 @@ public class ShiftInstance {
     private DayAssignment dayAssignment;
 
     private Day day;
+
     private LocalDate date;
 
     @JsonFormat(pattern = "HH:mm:ss")
@@ -34,6 +35,8 @@ public class ShiftInstance {
     private LocalTime endTime;
 
     private int placeAvailable;
+
+    private int fitnessCenter;
 
     private boolean state;
 }

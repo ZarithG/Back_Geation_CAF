@@ -26,21 +26,31 @@ public class ReservationService {
     @Autowired
     private ShiftService shiftService;
 
-    public void reserveShiftForUser(ReservationDTO reservationDTO){
+    public Optional<Reservation> reserveShiftForUser(ReservationDTO reservationDTO){
         Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
-        int totalReserves = countReversesToShiftIntance(shiftInstance.get());
-        //Verificar los cupos disponibles
-        if((shiftInstance.get().getPlaceAvailable() - totalReserves) > 0){
-            List<Reservation> reservation = reservationRepository.findAllByReservationEnumNotAttendedAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
+        if(shiftInstance.isPresent()){
+            int totalReserves = countReversesToShiftIntance(shiftInstance.get());
+            //Verificar los cupos disponibles
+            if((totalReserves - shiftInstance.get().getPlaceAvailable() ) > 0){
+                List<Reservation> reservation = reservationRepository.findAllByReservationEnumNotAttendedAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
 
-            if(reservation.isEmpty()){
-
-
+                if(reservation.isEmpty()){
+                    Reservation newReservation = new Reservation();
+                    newReservation.setDateReservation(reservationDTO.getDateReservation());
+                    newReservation.setShiftInstance(shiftInstance.get());
+                    newReservation.setDateReservation(reservationDTO.getDateReservation());
+                    newReservation.setUserId(reservationDTO.getUserId());
+                    newReservation.setReservationEnum(ReservationEnum.NOT_ATTENDED);
+                    return Optional.of(reservationRepository.save(newReservation));
+                } else{
+                    return Optional.empty();
+                }
+            }else{
+                return Optional.empty();
             }
-        }else{
-
-            System.out.println("Turnos llenos");
         }
+
+        return Optional.empty();
     }
 
     //Verificar el número de reservas para un shiftInstance específico
@@ -59,18 +69,15 @@ public class ReservationService {
         }
     }
 
-    public Reservation reserveShift(ReservationDTO newReservationDTO) {
-        Reservation reservation = new Reservation();
-        reservation.setReservationEnum(ReservationEnum.NOT_ATTENDED);
+    public Optional<Reservation> registryReservation(ReservationDTO reservationDTO){
+        Optional<Reservation> reservation = reservationRepository.findById(reservationDTO.getId());
+        if (reservation.isPresent()) {
+            reservation.get().setReservationEnum(ReservationEnum.ATTENDED);
+            return Optional.of(reservationRepository.save(reservation.get()));
+            //Verificar que si es el último turno asignado para ese horario el horario ya pase a estado false
 
-        return reservationRepository.save(reservation);
+        }
+        return Optional.empty();
     }
-
-    public Boolean existReservationToSameDay(int idUser, int idShift) {
-        Boolean exist = false;
-
-        return exist;
-    }
-
 
 }

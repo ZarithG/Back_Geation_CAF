@@ -24,7 +24,7 @@ public class Reservation {
     @JoinColumn(name = "shift_id", nullable = false)
     private ShiftInstance shiftInstance;
 
-    private Long userId;
+    private int userId;
 
     private LocalDateTime dateReservation;
 
