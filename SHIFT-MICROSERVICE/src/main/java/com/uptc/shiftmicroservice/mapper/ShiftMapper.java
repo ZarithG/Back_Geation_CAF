@@ -15,5 +15,4 @@ public interface ShiftMapper {
     @Mapping(source = "dayAssignment", target = "dayAssignment.id")
     Shift shiftDTOToShift(ShiftDTO shiftDTO);
 
-
 }

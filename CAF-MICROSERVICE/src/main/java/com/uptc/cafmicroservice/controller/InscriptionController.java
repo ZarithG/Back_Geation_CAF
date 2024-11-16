@@ -19,18 +19,6 @@ public class InscriptionController {
     @Autowired
     InscriptionService inscriptionService;
 
-//    @PostMapping("/test-inscribe")
-//    public String testInscribe(@RequestParam("files") MultipartFile[] multipartFiles, @RequestParam("type") ConsentTypeEnum consentType) {
-//        System.out.println("LLEGO INSCRIPCIÓN" + multipartFiles.length + " - " + consentType);
-//        return "Test";
-//    }
-
-    @PostMapping("/test-inscribe")
-    public String testInscribe(@RequestParam("files") MultipartFile[] multipartFiles, @RequestParam("type") ConsentTypeEnum consentType) {
-        System.out.println("LLEGO INSCRIPCIÓN" + multipartFiles.length + " - " + consentType);
-        return "Test";
-    }
-
     @PostMapping("/inscribe-user")
     public ResponseEntity<InscriptionDTO> inscribeUserInFitnessCenter(@RequestBody InscriptionDTO inscriptionDTO) {
         InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO);

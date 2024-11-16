@@ -7,9 +7,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3310/UsersDB?createDatabaseIfNotExist=true
-    username: admin
-    password: 'UsersMicro*1234'
+    url: jdbc:mysql://junction.proxy.rlwy.net:40476/UsersDB?createDatabaseIfNotExist=true
+    username: root
+    password: 'uBraPdmSSSBPQnkHdGiWRUMbfaEFyFNR'
 
 server:
   port: ${PORT:${SERVER_PORT:0}}
@@ -18,7 +18,7 @@ eureka:
   client:
     fetch-registry: true
     register-with-eureka: true
-    service-url:
-      default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
+    serviceUrl:
+      defaultZone: https://eureka-microservice-caf-app.onrender.com/eureka/
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

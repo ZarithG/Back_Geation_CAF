@@ -89,9 +89,7 @@ public class AuthUserService {
     }
 
     public AuthUser changeAuthUserPassword(String userName, String password){
-        System.out.println("Username:" +  userName);
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
-        System.out.println("Esta el usuario:" + user.isPresent());
         AuthUser userChanged = null;
         if (user.isPresent()){
             String encodedPassword = passwordEncoder.encode(password);
@@ -104,6 +102,22 @@ public class AuthUserService {
     public Set<Role> getRolesByUserName(String userName){
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
         return user.map(AuthUser::getRoles).orElse(null);
+    }
+
+    public AuthUser changeAuthUserState(String userName, boolean authUserState){
+        AuthUser user = getUserByUserName(userName);
+        System.out.println("USER NAME: " + user.getUserName() + " - " + authUserState);
+        if(user.getId() != 0){
+            user.setActive(authUserState);
+            AuthUser userToChangeState = authUserRepository.save(user);
+            if(userToChangeState.getId() != 0){
+                return userToChangeState;
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
     }
 
     public AuthUser changeAuthUserRole(String userName, RoleEnum roleEnum){

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
 
@@ -39,7 +40,7 @@ public class ShiftInstanceService {
         return shiftInstanceRepository.findById(idShiftInstance);
     }
 
-    public ShiftInstance addShiftInstance(LocalDate actDate, Shift shift) {
+    public ShiftInstance addShiftInstance(LocalDate actDate, Shift shift, int fitnessCenter) {
 
         ShiftInstance shiftInstance = new ShiftInstance();
 
@@ -47,6 +48,8 @@ public class ShiftInstanceService {
         shiftInstance.setStartTime(shift.getStartTime());
         shiftInstance.setEndTime(shift.getEndTime());
         shiftInstance.setDate(actDate);
+        shiftInstance.setState(true);
+        shiftInstance.setFitnessCenter(fitnessCenter);
 
         // Asegurar que las propiedades esenciales no sean nulas
         if (shift.getPlaceAvailable() == 0) {
@@ -69,7 +72,7 @@ public class ShiftInstanceService {
         System.out.println("Fecha: " + shiftInstance.getDate());
         System.out.println("Lugar disponible: " + shiftInstance.getPlaceAvailable());
         System.out.println("DayAssignment: " + shiftInstance.getDayAssignment());
-        System.out.println("Estado: " + shiftInstance.isState());
+        System.out.println("Estado: " + shiftInstance.getState());
 
         // Guardar y retornar la instancia
         return shiftInstanceRepository.save(shiftInstance);
@@ -107,14 +110,16 @@ public class ShiftInstanceService {
 
         if (dayAssignment.isPresent()) {
             System.out.println("ENTRÓ A INSTANCIA SIN CREAR PARA ESE DÍA");
-            Optional<ShiftInstance> lastShiftInstance = shiftInstanceRepository.findTopByStateTrueOrderByDateDesc();
-            if(lastShiftInstance.isEmpty()){
+            Optional<List<ShiftInstance>> lastShiftInstance = shiftInstanceRepository.findTopByStateTrueOrderByDateDesc();
+            System.out.println("LAST "+lastShiftInstance.isPresent());
+            if(!lastShiftInstance.isPresent()){
+                System.out.println("HOOOOOLLLLLLAAAA"+dayAssignment.get().getId());
                 List<ShiftDTO> shifts = shiftService.getShiftsByDayAssignment(dayAssignment.get().getId());
 
                 for (ShiftDTO shift : shifts) {
                     System.out.println("VERIFICANDO SHIFTS");
                     if(shift.getStartTime().isAfter(LocalDateTime.now().toLocalTime())){
-                        shiftInstancesList.add(addShiftInstance(actDate, ShiftMapper.INSTANCE.shiftDTOToShift(shift)));
+                        shiftInstancesList.add(addShiftInstance(actDate, ShiftMapper.INSTANCE.shiftDTOToShift(shift),dayAssignment.get().getFitnessCenter()));
                     }
                 }
             }
@@ -141,7 +146,8 @@ public class ShiftInstanceService {
         List<ShiftInstance> shiftInstancesAvailable = new ArrayList<>();
 
         for(ShiftInstance shift: shiftInstanceList){
-            if(hasPlaceAvailable(actDate, shift) > 0){
+
+            if(hasPlaceAvailable(actDate, shift) > 0 && isActiveShiftInstance(shift.getId())){
                 shiftInstancesAvailable.add(shift);
             }
         }
@@ -150,5 +156,29 @@ public class ShiftInstanceService {
 
     public int hasPlaceAvailable(LocalDate actDate, ShiftInstance shiftInstance) {
         return shiftInstance.getPlaceAvailable() - reservationRepository.countReservationsByShiftInstance(shiftInstance);
+    }
+
+    public boolean isActiveShiftInstance(long idShiftInstance){
+        ShiftInstance actShiftInstance = findShiftInstanceById(idShiftInstance).get();
+        return LocalTime.now().isBefore(actShiftInstance.getEndTime()) && actShiftInstance.getState();
+    }
+
+    public Optional<ShiftInstance> finishShift(long idShiftInstance){
+        Optional<ShiftInstance> actShiftInstance = findShiftInstanceById(idShiftInstance);
+        if(actShiftInstance.isPresent()){
+            actShiftInstance.get().setState(false);
+            return Optional.of(shiftInstanceRepository.save(actShiftInstance.get()));
+        }else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<ShiftInstance> obtainActShiftInstance(int fitnessCenter){
+        List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter);
+        if(shiftInstances.size() > 0){
+            return Optional.of(shiftInstances.get(0));
+        }
+        return Optional.empty();
+
     }
 }

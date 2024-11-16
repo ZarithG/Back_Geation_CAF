@@ -5,7 +5,6 @@ import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.mapper.AuthUserMapper;
 import com.uptc.authmicroservice.security.JwtProvider;
 import com.uptc.authmicroservice.service.AuthUserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,6 @@ public class AuthUserController {
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         authUserService.logout(request, response);
     }
-
 
     @PostMapping("/validate")
     public ResponseEntity<TokenDTO> validate(@RequestParam String token, @RequestBody RequestDTO requestDTO){
@@ -96,5 +94,23 @@ public class AuthUserController {
         AuthBasicUserDTO authBasicUserDTOChanged = new AuthBasicUserDTO();
         authBasicUserDTOChanged.setUserName(authUser.getUserName());
         return ResponseEntity.ok(authBasicUserDTOChanged);
+    }
+
+    @PostMapping("/inactive-user/{userName}")
+    public ResponseEntity<AuthUserDTO> inactiveUser(@PathVariable("userName") String userName){
+        AuthUser authUser = authUserService.changeAuthUserState(userName, false);
+        if(authUser == null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser));
+    }
+
+    @PostMapping("/active-user/{userName}")
+    public ResponseEntity<AuthUserDTO> activeUser(@PathVariable("userName") String userName){
+        AuthUser authUser = authUserService.changeAuthUserState(userName, true);
+        if(authUser == null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser));
     }
 }
