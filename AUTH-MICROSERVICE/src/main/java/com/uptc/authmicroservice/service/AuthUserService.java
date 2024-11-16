@@ -65,6 +65,11 @@ public class AuthUserService {
         response.addCookie(cookie);
     }
 
+    public boolean isUserVerified(String userName){
+        Optional<AuthUser> authUser = authUserRepository.findByUserName(userName);
+        return authUser.map(AuthUser::isUserVerified).orElse(false);
+    }
+
     public TokenDTO validate(String token, RequestDTO requestDTO) {
         if(!jwtProvider.validate(token, requestDTO))
             return null;

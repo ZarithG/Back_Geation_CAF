@@ -7,9 +7,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3313/ShiftDB?createDatabaseIfNotExist=true
-    username: admin
-    password: 'ShiftMicro*1234'
+    url: jdbc:mysql://junction.proxy.rlwy.net:26784/ShiftDB?createDatabaseIfNotExist=true
+    username: root
+    password: PzIOmLnynQcfvUROXZBsJnfnsJRolAWG
 
 server:
   port: 9090
@@ -19,6 +19,6 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
+      default-zone: http://localhost:8761/eureka
   instance:
     hostname: localhost

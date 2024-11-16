@@ -24,7 +24,7 @@ public class SecurityConfig{
             "/auth/change/password", "/auth/change-role",
             "/auth/verify/user", "/auth/google/login",
             "/auth/change-wellbeing-director", "/auth/active-user/**",
-            "/auth/inactive-user/**"
+            "/auth/inactive-user/**", "/auth/isUserVerified/**"
     };
 
 
