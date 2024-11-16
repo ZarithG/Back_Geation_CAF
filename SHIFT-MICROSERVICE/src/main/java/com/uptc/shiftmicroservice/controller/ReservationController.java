@@ -40,7 +40,7 @@ public class ReservationController {
     public ResponseEntity<List<ShiftInstance> > createAllInstances(@PathVariable("idFitnessCenter") int idFitnessCenter ){
         List<ShiftInstance> shiftsInstances = shiftInstanceService.createAllInstances( idFitnessCenter);
 
-        //List<ShiftDTO> shiftDTOS = shiftsInstances.stream().map(ShiftMapper.INSTANCE::shift).collect(Collectors.toList());
+
         return ResponseEntity.ok(shiftsInstances);
     }
 
@@ -48,6 +48,17 @@ public class ReservationController {
     public ResponseEntity<List<ShiftInstance>> allShiftInstancesByCaf(@PathVariable("idCaf") int idCaf ){
         List<ShiftInstance> shiftInstancesAvailable = shiftInstanceService.findAllShiftInstancesByCaf(idCaf);
         return ResponseEntity.ok(shiftInstancesAvailable);
+    }
+
+    //Metodo para registrar asistencia
+    @PostMapping("/registry-attended-reserve")
+    public ResponseEntity<?> registryReservationUser(@RequestBody ReservationDTO reservationDTO){
+        Optional<Reservation> reservationRegistry;
+        if(shiftInstanceService.isActiveShiftInstance(reservationDTO.getIdShiftInstance())){
+            reservationRegistry = reservationService.registryReservation(reservationDTO.getId());
+            return ResponseEntity.ok(reservationRegistry);
+        }
+        return ResponseEntity.noContent().build();
     }
 
 }

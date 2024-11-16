@@ -1,30 +1,23 @@
-package com.uptc.shiftmicroservice.entity;
+package com.uptc.shiftmicroservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.uptc.shiftmicroservice.entity.Day;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class ShiftInstance {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ShiftInstanceDTO {
     private long id;
 
     private boolean state;
 
-    @ManyToOne
-    @JoinColumn(name = "day_assignment_id", nullable = false)
-    private DayAssignment dayAssignment;
+    private int dayAssignment;
 
     private Day day;
 
@@ -39,8 +32,4 @@ public class ShiftInstance {
     private int placeAvailable;
 
     private int fitnessCenter;
-
-    public boolean getState(){
-        return this.state;
-    }
 }

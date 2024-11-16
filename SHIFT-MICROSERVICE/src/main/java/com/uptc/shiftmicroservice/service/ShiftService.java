@@ -1,19 +1,14 @@
 package com.uptc.shiftmicroservice.service;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import com.uptc.shiftmicroservice.dto.DayAssignmentDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
-import com.uptc.shiftmicroservice.entity.Day;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Shift;
-import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.mapper.ShiftMapper;
 import com.uptc.shiftmicroservice.repository.DayAssignmentRepository;
 import com.uptc.shiftmicroservice.repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 

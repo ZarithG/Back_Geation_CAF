@@ -1,7 +1,6 @@
 package com.uptc.shiftmicroservice.service;
 
 import com.uptc.shiftmicroservice.dto.ReservationDTO;
-import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Reservation;
 import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.enums.ReservationEnum;
@@ -28,12 +27,14 @@ public class ReservationService {
 
     public Optional<Reservation> reserveShiftForUser(ReservationDTO reservationDTO){
         Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
+        System.out.println("ID INSTANCE "+shiftInstance.get().getId());
         if(shiftInstance.isPresent()){
             int totalReserves = countReversesToShiftIntance(shiftInstance.get());
             //Verificar los cupos disponibles
-            if((totalReserves - shiftInstance.get().getPlaceAvailable() ) > 0){
+            System.out.println("CUPOS reservados:" + totalReserves);
+            if(( shiftInstance.get().getPlaceAvailable() - totalReserves) > 0){
                 List<Reservation> reservation = reservationRepository.findAllByReservationEnumNotAttendedAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
-
+                System.out.println("VERIFICANDO OTROS TURNOS");
                 if(reservation.isEmpty()){
                     Reservation newReservation = new Reservation();
                     newReservation.setDateReservation(reservationDTO.getDateReservation());
@@ -69,8 +70,9 @@ public class ReservationService {
         }
     }
 
-    public Optional<Reservation> registryReservation(ReservationDTO reservationDTO){
-        Optional<Reservation> reservation = reservationRepository.findById(reservationDTO.getId());
+
+    public Optional<Reservation> registryReservation(long idShiftInstance){
+        Optional<Reservation> reservation = reservationRepository.findById(idShiftInstance);
         if (reservation.isPresent()) {
             reservation.get().setReservationEnum(ReservationEnum.ATTENDED);
             return Optional.of(reservationRepository.save(reservation.get()));
@@ -78,6 +80,19 @@ public class ReservationService {
 
         }
         return Optional.empty();
+    }
+
+    public boolean registryAttendedAllReservationShift(long idFinishShiftInstance){
+        List<Reservation> reservationList = reservationRepository.findByShiftInstance_Id(idFinishShiftInstance);
+        if(reservationList.isEmpty()){
+            for(Reservation reservation : reservationList){
+                if(reservation.getReservationEnum().name().equals("SCHEDULED")){
+                    reservation.setReservationEnum(ReservationEnum.NOT_ATTENDED);
+                }
+            }
+            return true;
+        }else
+            return false;
     }
 
 }
