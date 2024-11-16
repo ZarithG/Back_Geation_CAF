@@ -68,6 +68,11 @@ public class AuthUserController {
         return ResponseEntity.ok(authUser);
     }
 
+    @GetMapping("/isUserVerified/{email}")
+    public ResponseEntity<Boolean> isUserVerified(@PathVariable("email") String email){
+        return ResponseEntity.ok(authUserService.isUserVerified(email));
+    }
+
     @PostMapping("/change/password")
     public ResponseEntity<AuthUser> changePassword(@RequestBody AuthUserDTO dto){
         AuthUser authUser = authUserService.changeAuthUserPassword(dto.getUserName(), dto.getPassword());

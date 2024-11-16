@@ -22,8 +22,9 @@ eureka:
   client:
     fetch-registry: true
     register-with-eureka: true
-    service-url:
-      default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+#      defaultZone: https://eureka-microservice-caf-app.onrender.com/eureka/
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
