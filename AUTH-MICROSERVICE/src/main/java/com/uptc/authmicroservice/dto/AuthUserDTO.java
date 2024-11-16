@@ -14,10 +14,12 @@ import java.util.Set;
 @Data
 @Builder
 public class AuthUserDTO {
+    private int id;
     private String userName;
     private String password;
     private Set<Role> roles = new HashSet<>();
-    private boolean isUserVerified = false;
+    private boolean isUserVerified;
+    private boolean isActive;
     private String pictureUrl;
     private TokenDTO token;
 }

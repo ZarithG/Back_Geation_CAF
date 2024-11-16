@@ -22,6 +22,7 @@ public class AuthUser {
     private String userName;
     private String password = "DEFAULT";
     private boolean isUserVerified = false;
+    private boolean isActive = true;
     private String pictureUrl;
 
     @ManyToMany(fetch = FetchType.EAGER)

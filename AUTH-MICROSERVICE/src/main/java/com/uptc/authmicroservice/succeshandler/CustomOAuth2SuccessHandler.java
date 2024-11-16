@@ -67,6 +67,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 System.out.println("EMAIL: " + email);
                 userDTOToCreate.setUserName(email);
                 userDTOToCreate.setPictureUrl(pictureUrl);
+                userDTOToCreate.setActive(true);
 
                 Set<Role> roles = new HashSet<>();
                 Role role = new Role();
@@ -80,7 +81,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 UserDTO userDTO = new UserDTO();
                 userDTO.setEmail(email);
                 userDTO.setName(name);
-                userDTO.setUserType("STUDENT"); //Revisar
+                userDTO.setUserType("STUDENT");
 
                 HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
 
@@ -100,15 +101,33 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             AuthUserDTO userDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(user);
             TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setToken(token);
+            userDTO.setToken(tokenDTO);
 
             ObjectMapper objectMapper = new ObjectMapper();
             String authUserJson = objectMapper.writeValueAsString(userDTO);
 
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
-                    .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
-                    .build().toUriString();
+            AuthUser authUser = authUserService.getUserByUserName(userDTO.getUserName());
 
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            boolean isUser = false;
+            String targetUrl = "";
+
+            for (int i = 0; i < authUser.getRoles().toArray().length; i++){
+                if(authUser.getRoles().toArray()[i].equals(RoleEnum.ROLE_USER)){
+                    isUser = true;
+                    targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
+                            .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
+                            .build().toUriString();
+                    getRedirectStrategy().sendRedirect(request, response, targetUrl);
+                }
+            }
+
+            if(!isUser){
+                targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/")
+                        .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
+                        .build().toUriString();
+                getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            }
+
         }catch (Exception e){
             authUserService.logout(request, response);
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000")

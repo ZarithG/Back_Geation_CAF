@@ -63,16 +63,6 @@ public class JwtProvider {
     }
 
     public boolean validate(String token, RequestDTO requestDTO) {
-//        if(!isUserWithRole(token, RoleEnum.ROLE_ADMIN) && adminRouteValidator.isAdminPath(requestDTO)) {
-//            System.out.println("NO ES ADMIN");
-//            if (!isUserWithRole(token, RoleEnum.ROLE_USER) && userRouteValidator.isUserPath(requestDTO)) {
-//                System.out.println("NO ES USUARIO");
-//                return false;
-//            }
-//        }else {
-//            System.out.println("SI ES ADMIN");
-//        }
-
         try {
             if(!new Date().before(extractExpiration(token))) {
                 return false;

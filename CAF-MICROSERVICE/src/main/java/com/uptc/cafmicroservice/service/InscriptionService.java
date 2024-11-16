@@ -39,7 +39,6 @@ public class InscriptionService {
     public List<Inscription> getAllInscriptionByFitnessCenter(int fitnessCenterId){
         if (fitnessCenterRepository.existsById(fitnessCenterId)){
             return inscriptionRepository.findFitnessCenterInscriptions(fitnessCenterId);
-
         }else{
             return null;
         }

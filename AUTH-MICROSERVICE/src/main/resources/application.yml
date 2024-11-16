@@ -10,9 +10,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3311/AuthenticationDB?createDatabaseIfNotExist=true
-    username: ${USERNAME-DB}
-    password: ${PASSWORD-DB}
+    url: jdbc:mysql://autorack.proxy.rlwy.net:27967/AuthenticationDB?createDatabaseIfNotExist=true
+    username: root
+    password: mVGfssOpJTXkgAInNhCSCvQYxJCjzbdw
 
   security:
     oauth2:
@@ -34,8 +34,8 @@ eureka:
   client:
     fetch-registry: true
     register-with-eureka: true
-    service-url:
-      default-zone: http://eureka:EurekaService*1234@localhost:8761/eureka
+    serviceUrl:
+      defaultZone: https://eureka-microservice-caf-app.onrender.com/eureka/
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
@@ -56,6 +56,9 @@ admin-paths:
     - uri: "/caf/change-coordinator"
       method: "POST"
 
+    - uri: "/auth/change-user-state"
+      method: "POST"
+
 user-paths:
   paths:
     - uri: "/user/{1}[1-9]+[0-9]*"
@@ -70,8 +73,12 @@ user-paths:
     - uri: "/user/save"
       method: "POST"
 
-    - uri: "/caf/inscription/inscribe-user"
-      method: "POST"
+    - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
 
 
+caf-coordinator-paths:
+  paths:
+    - uri: ""
+      method: "GET"
 
