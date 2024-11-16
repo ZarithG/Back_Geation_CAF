@@ -1,13 +1,7 @@
 package com.uptc.shiftmicroservice.controller;
 
-import com.uptc.shiftmicroservice.dto.DayAssignmentDTO;
 import com.uptc.shiftmicroservice.dto.ReservationDTO;
-import com.uptc.shiftmicroservice.dto.ShiftDTO;
-import com.uptc.shiftmicroservice.entity.Day;
-import com.uptc.shiftmicroservice.entity.DayAssignment;
-import com.uptc.shiftmicroservice.entity.Shift;
-import com.uptc.shiftmicroservice.entity.ShiftInstance;
-import com.uptc.shiftmicroservice.mapper.ShiftMapper;
+import com.uptc.shiftmicroservice.entity.*;
 import com.uptc.shiftmicroservice.service.DayAssignmentService;
 import com.uptc.shiftmicroservice.service.ReservationService;
 import com.uptc.shiftmicroservice.service.ShiftInstanceService;
@@ -16,15 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/reserves")
+@RequestMapping("/reserve")
 public class ReservationController {
     @Autowired
     DayAssignmentService dayAssignmentService;
@@ -38,16 +29,36 @@ public class ReservationController {
     @Autowired
     ReservationService reservationService;
 
-    @GetMapping("/reserve-shift")
-    public ResponseEntity<ReservationDTO> reserveShiftForUser(@RequestBody ReservationDTO reservationDTO){
-
-        return ResponseEntity.ok(reservationDTO);
+    @PostMapping("/reserve-shift-user")
+    public ResponseEntity<Reservation> reserveShiftForUser(@RequestBody ReservationDTO reservationDTO){
+        Optional<Reservation> saveReservetion = reservationService.reserveShiftForUser(reservationDTO);
+        return  saveReservetion.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(saveReservetion.get()) ;
     }
 
-    // Day day = Day.valueOf("LUNES");
     //Metodo que se ejecuta para indicar que se creen las instancias de SHiftInstance de un día específico
-    public ResponseEntity<?> createShiftInstance(Day day, int idFitnessCenter, LocalDate date){
+    @PostMapping("/create-shift-instances/{idFitnessCenter}")
+    public ResponseEntity<List<ShiftInstance> > createAllInstances(@PathVariable("idFitnessCenter") int idFitnessCenter ){
+        List<ShiftInstance> shiftsInstances = shiftInstanceService.createAllInstances( idFitnessCenter);
 
-        return ResponseEntity.ok("");
+
+        return ResponseEntity.ok(shiftsInstances);
     }
+
+    @GetMapping("/shift-instances-caf/{idCaf}")
+    public ResponseEntity<List<ShiftInstance>> allShiftInstancesByCaf(@PathVariable("idCaf") int idCaf ){
+        List<ShiftInstance> shiftInstancesAvailable = shiftInstanceService.findAllShiftInstancesByCaf(idCaf);
+        return ResponseEntity.ok(shiftInstancesAvailable);
+    }
+
+    //Metodo para registrar asistencia
+    @PostMapping("/registry-attended-reserve")
+    public ResponseEntity<?> registryReservationUser(@RequestBody ReservationDTO reservationDTO){
+        Optional<Reservation> reservationRegistry;
+        if(shiftInstanceService.isActiveShiftInstance(reservationDTO.getIdShiftInstance())){
+            reservationRegistry = reservationService.registryReservation(reservationDTO.getId());
+            return ResponseEntity.ok(reservationRegistry);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
 }

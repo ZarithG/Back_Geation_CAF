@@ -28,8 +28,6 @@ public class Shift implements Comparable<Shift>{
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime startTime;
 
-    //@Temporal(TemporalType.TIME)
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
     private int placeAvailable;

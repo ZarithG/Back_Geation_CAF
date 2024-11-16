@@ -10,6 +10,7 @@ import com.uptc.shiftmicroservice.mapper.ShiftMapper;
 import com.uptc.shiftmicroservice.service.DayAssignmentService;
 import com.uptc.shiftmicroservice.service.ShiftService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,25 +81,22 @@ public class ShiftController {
 //    }
 
     @PostMapping("/saveShift")
-    public ResponseEntity<ShiftDTO> saveShift(@RequestBody DayAssignmentDTO dayAssignmentDTO){
+    public ResponseEntity<?> saveShift(@RequestBody DayAssignmentDTO dayAssignmentDTO){
         if(shiftService.verifyStartAndEndTime(dayAssignmentDTO.getShifts().get(0))) {
-            System.out.println(dayAssignmentDTO.getDay());
-
             DayAssignment dayAssignment = dayAssignmentService.validarDayAssignment(dayAssignmentDTO);
-
             Optional<Shift> shiftCreated = shiftService.addShift(dayAssignment, ShiftMapper.INSTANCE.shiftDTOToShift(dayAssignmentDTO.getShifts().get(0)));
             if (shiftCreated.isPresent()) {
                 ShiftDTO shiftDTO = ShiftMapper.INSTANCE.shiftToShiftDTO(shiftCreated.get());
                 System.out.println("INICIO"+shiftDTO.getStartTime());
                 System.out.println("FIN"+shiftDTO.getEndTime());
-                ResponseEntity.ok(shiftDTO);
+                return ResponseEntity.ok(shiftDTO);
             }else {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: No se pudo crear el turno debido a un conflicto entre los horarios.");
             }
         }else {
-            System.out.println("HORA INICIO Y FIN INCORRECTAS");
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("Error: La hora de inicio y fin son incorrectas.");
         }
-        return ResponseEntity.badRequest().build();
     }
 
 //    @PutMapping("/editShift")
