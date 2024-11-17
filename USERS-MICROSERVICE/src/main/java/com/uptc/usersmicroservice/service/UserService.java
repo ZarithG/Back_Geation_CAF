@@ -68,18 +68,18 @@ public class UserService {
     }
 
     private EmergencyContact saveUserEmergencyContact(EmergencyContact emergencyContact, UserDTO userDTO){
-        if (emergencyContact == null){
-            return emergencyContactService.save(userDTO.getEmergencyContact());
+        EmergencyContact actEmergencyContact = userDTO.getEmergencyContact();
+        actEmergencyContact.setCity(cityService.findCityById(actEmergencyContact.getCity().getId()));
+        if (emergencyContact != null){
+            userDTO.getEmergencyContact().setId(emergencyContact.getId());
         }
-        userDTO.getEmergencyContact().setId(emergencyContact.getId());
-        return emergencyContactService.save(userDTO.getEmergencyContact());
+        return emergencyContactService.save(actEmergencyContact);
     }
 
     private MedicalInformation saveUserMedicalInformation(MedicalInformation medicalInformation, UserDTO userDTO){
-        if (medicalInformation == null){
-            return medicalInformationService.save(userDTO.getMedicalInformation());
+        if (medicalInformation != null){
+            userDTO.getMedicalInformation().setId(medicalInformation.getId());
         }
-        userDTO.getMedicalInformation().setId(medicalInformation.getId());
         return medicalInformationService.save(userDTO.getMedicalInformation());
     }
 
