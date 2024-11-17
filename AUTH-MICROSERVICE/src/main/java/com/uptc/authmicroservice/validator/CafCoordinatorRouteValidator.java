@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class CafCoordinatorRouteValidator {
     private List<RequestDTO> paths;
 
-    public boolean isUserPath(RequestDTO requestDTO){
+    public boolean isCafCoordinatorPath(RequestDTO requestDTO){
         return paths.stream().anyMatch(p->
                 Pattern.matches(p.getUri(), requestDTO.getUri()) && p.getMethod().equals(requestDTO.getMethod()));
     }

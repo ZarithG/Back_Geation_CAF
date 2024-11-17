@@ -69,8 +69,12 @@ public class AuthUserController {
     }
 
     @GetMapping("/isUserVerified/{email}")
-    public ResponseEntity<Boolean> isUserVerified(@PathVariable("email") String email){
-        return ResponseEntity.ok(authUserService.isUserVerified(email));
+    public ResponseEntity<Integer> isUserVerified(@PathVariable("email") String email){
+        System.out.println(authUserService.isUserVerified(email) + " - " + email);
+        if(authUserService.isUserVerified(email))
+            return ResponseEntity.ok(1);
+        else
+            return ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/change/password")

@@ -119,3 +119,23 @@ user-paths:
 
     - uri: "/user/programs"
       method: "GET"
+
+sportsman-paths:
+  paths:
+    - uri: "/user/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/caf/question/all"
+      method: "GET"
+
+    - uri: "/caf/inscription/inscribe-user"
+      method: "POST"
+
+    - uri: "/user/save"
+      method: "POST"
+
+    - uri: "/user/departments"
+      method: "GET"
+
+    - uri: "/user/programs"
+      method: "GET"

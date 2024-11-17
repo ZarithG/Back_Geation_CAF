@@ -4,8 +4,7 @@ import com.uptc.authmicroservice.dto.RequestDTO;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
 import com.uptc.authmicroservice.enums.RoleEnum;
-import com.uptc.authmicroservice.validator.AdminRouteValidator;
-import com.uptc.authmicroservice.validator.UserRouteValidator;
+import com.uptc.authmicroservice.validator.*;
 import io.jsonwebtoken.Claims;
 //import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.io.Decoders;
@@ -28,10 +27,19 @@ public class JwtProvider {
     private String secret;
 
     @Autowired
-    AdminRouteValidator adminRouteValidator;
+    private AdminRouteValidator adminRouteValidator;
 
     @Autowired
     private UserRouteValidator userRouteValidator;
+
+    @Autowired
+    private CafCoordinatorRouteValidator cafCoordinatorRouteValidator;
+
+    @Autowired
+    private WellbeingDirectorRouteValidator wellbeingDirectorRouteValidator;
+
+    @Autowired
+    private SportsmanRouteValidator sportsmanRouteValidator;
 
     public String createToken(AuthUser user){
         Date issuedAt = new Date(System.currentTimeMillis());
@@ -94,9 +102,22 @@ public class JwtProvider {
 
         if (userRouteValidator.isUserPath(requestDTO)) {
             routeValidators.add(1);
-        } else {
+        }
+
+        if (wellbeingDirectorRouteValidator.isWellbeingDirectorPath(requestDTO)) {
             routeValidators.add(2);
         }
+
+        if (cafCoordinatorRouteValidator.isCafCoordinatorPath(requestDTO)) {
+            routeValidators.add(3);
+        }
+
+        if (sportsmanRouteValidator.isSportsmanPaths(requestDTO)) {
+            routeValidators.add(4);
+        }else{
+            routeValidators.add(5);
+        }
+
         return routeValidators;
     }
 
