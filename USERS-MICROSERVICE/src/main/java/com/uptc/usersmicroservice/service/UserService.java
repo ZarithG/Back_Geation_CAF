@@ -88,12 +88,13 @@ public class UserService {
         User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
 
         if(userDTO.getUserType() != null) {
-        userToAdd.setUserType(userDTO.getUserType());
+            userToAdd.setUserType(userDTO.getUserType());
         }
 
         userToAdd.setCity(cityService.findCityById(4));
 
         if (existingUser != null) {
+            userToAdd.setName(existingUser.getName());
             userToAdd.setId(existingUser.getId());
             userToAdd.setUniversityInformation(saveUserUniversityInformation(existingUser.getUniversityInformation(),
                     userDTO));
