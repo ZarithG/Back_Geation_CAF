@@ -86,7 +86,11 @@ public class UserService {
     public User saveUser(UserDTO userDTO) {
         User existingUser = getUserByEmail(userDTO.getEmail());
         User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
-        userToAdd.setUserType(UserTypeEnum.valueOf(userDTO.getUserType()));
+
+        if(userDTO.getUserType() != null) {
+        userToAdd.setUserType(userDTO.getUserType());
+        }
+
         userToAdd.setCity(cityService.findCityById(4));
 
         if (existingUser != null) {

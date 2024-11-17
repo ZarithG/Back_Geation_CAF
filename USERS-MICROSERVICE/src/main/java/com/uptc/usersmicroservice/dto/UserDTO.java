@@ -3,6 +3,7 @@ package com.uptc.usersmicroservice.dto;
 import com.uptc.usersmicroservice.entity.EmergencyContact;
 import com.uptc.usersmicroservice.entity.MedicalInformation;
 import com.uptc.usersmicroservice.entity.UniversityInformation;
+import com.uptc.usersmicroservice.enums.UserTypeEnum;
 import lombok.*;
 
 import java.util.Date;
@@ -19,7 +20,7 @@ public class UserDTO {
     private String documentType;
     private String documentNumber;
     private String universityCode;
-    private String userType;
+    private UserTypeEnum userType;
     private Date birthDate;
     private String phoneNumber;
     private String residenceAddress;
