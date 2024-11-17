@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProgramRepository extends JpaRepository<Program, Integer> {
     Program findByProgramName(String name);
+    Program findById(int id);
 }

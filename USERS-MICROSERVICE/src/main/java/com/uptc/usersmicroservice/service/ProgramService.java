@@ -21,8 +21,8 @@ public class ProgramService {
 
     }
 
-    public Program getProgramByProgramName(String programName) {
-        return programRepository.findByProgramName(programName);
+    public Program getProgramByProgramId(int programId) {
+        return programRepository.findById(programId);
     }
 
     private List<ProgramDTO> convertToProgramDTO(List<Program> programs) {
