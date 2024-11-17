@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/reserve")
+@RequestMapping("/shift/reserve")
 public class ReservationController {
     @Autowired
     DayAssignmentService dayAssignmentService;

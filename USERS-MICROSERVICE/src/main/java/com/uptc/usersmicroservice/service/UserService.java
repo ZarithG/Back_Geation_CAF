@@ -14,6 +14,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Date;
+import java.time.ZoneId;
 
 import java.util.List;
 
@@ -48,6 +52,14 @@ public class UserService {
 
     public User getUserByEmail(String email){
         return userRepository.findByEmail(email);
+    }
+
+    public boolean isUserOldMayor(String email){
+        User user = getUserByEmail(email);
+        LocalDate birthLocalDate = user.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(birthLocalDate, currentDate).getYears();
+        return age >= 18;
     }
 
     private UniversityInformation saveUserUniversityInformation(UniversityInformation actUniversityInformation, UserDTO userDTO){

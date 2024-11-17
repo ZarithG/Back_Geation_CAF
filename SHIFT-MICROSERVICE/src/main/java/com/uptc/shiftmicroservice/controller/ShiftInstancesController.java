@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/shift-instances")
+@RequestMapping("/shift/shift-instances")
 public class ShiftInstancesController {
 
     @Autowired
