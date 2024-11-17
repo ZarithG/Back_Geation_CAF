@@ -22,11 +22,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
-    @Autowired
-    AdminRouteValidator adminRouteValidator;
+
 
     @Value("${jwt.secret}")
     private String secret;
+
+    @Autowired
+    AdminRouteValidator adminRouteValidator;
+
     @Autowired
     private UserRouteValidator userRouteValidator;
 
@@ -106,6 +109,21 @@ public class JwtProvider {
                 return true;
             case 1:
                 if(!isUserWithRole(token, RoleEnum.ROLE_USER)) {
+                    return false;
+                }
+                return true;
+            case 2:
+                if(!isUserWithRole(token, RoleEnum.ROLE_WELLBEING_DIRECTOR)) {
+                    return false;
+                }
+                return true;
+            case 3:
+                if(!isUserWithRole(token, RoleEnum.ROLE_CAF_COORDINATOR)) {
+                    return false;
+                }
+                return true;
+            case 4:
+                if(!isUserWithRole(token, RoleEnum.ROLE_SPORTSMAN)) {
                     return false;
                 }
                 return true;

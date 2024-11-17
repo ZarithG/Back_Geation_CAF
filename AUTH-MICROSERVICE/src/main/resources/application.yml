@@ -57,10 +57,44 @@ admin-paths:
     - uri: "/caf/change-coordinator"
       method: "POST"
 
-    - uri: "/auth/change-user-state"
+    - uri: "/user/departments"
+      method: "GET"
+
+    - uri: "/user/programs"
+      method: "GET"
+
+wellbeing-director-paths:
+  paths:
+    - uri: "/user/all"
+      method: "GET"
+
+    - uri: "/user/departments"
+      method: "GET"
+
+    - uri: "/user/programs"
+      method: "GET"
+
+    - uri: "/user/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/user/save"
       method: "POST"
 
     - uri: "/user/departments"
+      method: "GET"
+
+    - uri: "/user/programs"
+      method: "GET"
+
+    - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+caf-coordinator-paths:
+  paths:
+    - uri: "/user/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
 user-paths:
@@ -85,9 +119,3 @@ user-paths:
 
     - uri: "/user/programs"
       method: "GET"
-
-caf-coordinator-paths:
-  paths:
-    - uri: ""
-      method: "GET"
-
