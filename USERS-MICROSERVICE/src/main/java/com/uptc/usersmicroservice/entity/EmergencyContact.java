@@ -1,9 +1,6 @@
 package com.uptc.usersmicroservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +21,8 @@ public class EmergencyContact {
     private String relationship;
 
     private String residenceAddress;
-    private String city;
-    private String department;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id", referencedColumnName = "id", nullable = false)
+    private City city;
 }

@@ -83,6 +83,9 @@ user-paths:
     - uri: "/user/departments"
       method: "GET"
 
+    - uri: "/user/programs"
+      method: "GET"
+
 caf-coordinator-paths:
   paths:
     - uri: ""
