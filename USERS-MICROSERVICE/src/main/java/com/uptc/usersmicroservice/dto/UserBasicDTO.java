@@ -20,6 +20,6 @@ public class UserBasicDTO {
     private Date birthDate;
     private String phoneNumber;
     private String residenceAddress;
-    private String department;
-    private String city;
+    private int department;
+    private int city;
 }

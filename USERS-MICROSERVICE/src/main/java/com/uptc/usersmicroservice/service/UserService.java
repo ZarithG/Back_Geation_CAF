@@ -32,6 +32,9 @@ public class UserService {
     MedicalInformationService medicalInformationService;
 
     @Autowired
+    CityService cityService;
+
+    @Autowired
     RestTemplate restTemplate;
 
     public List<User> getAll(){
@@ -84,6 +87,7 @@ public class UserService {
         User existingUser = getUserByEmail(userDTO.getEmail());
         User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
         userToAdd.setUserType(UserTypeEnum.valueOf(userDTO.getUserType()));
+        userToAdd.setCity(cityService.findCityById(4));
 
         if (existingUser != null) {
             userToAdd.setId(existingUser.getId());
@@ -93,6 +97,7 @@ public class UserService {
                     userDTO));
             userToAdd.setMedicalInformation(saveUserMedicalInformation(existingUser.getMedicalInformation(),
                     userDTO));
+            userToAdd.setCity(cityService.findCityById(userDTO.getCityId()));
 
             if (existingUser.getUniversityCode() == null) {
                 HttpEntity<UserDTO> requestVerifyUser = new HttpEntity<>(userDTO);
