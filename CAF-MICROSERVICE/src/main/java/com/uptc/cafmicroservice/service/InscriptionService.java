@@ -45,40 +45,51 @@ public class InscriptionService {
     }
 
     public List<InscriptionDTO> getAllUserInscriptions(String email){
+        int userId = searchUserByEmail(email);
+
+        if(userId != 0){
+            return InscriptionMapper.INSTANCE.mapInscriptionListToInscriptionDTOList(inscriptionRepository.findAllUserInscriptions(userId));
+        }
+        return null;
+    }
+
+    public InscriptionDTO inscribeUserInFitnessCenter(InscriptionDTO inscriptionDTO, String email){
+        Optional<FitnessCenter> fitnessCenterOptional = fitnessCenterRepository.findById(inscriptionDTO.getFitnessCenterDTO().getId());
+        Inscription inscription = new Inscription();
+
+        if (fitnessCenterOptional.isPresent()){
+            int userId = searchUserByEmail(email);
+
+            if (userId != 0){
+                inscription.setUserId(userId);
+                inscription.setInscriptionDate(new Date());
+                inscription.setInscriptionStatus(InscriptionStatusEnum.PENDING);
+                inscription.setFitnessCenter(fitnessCenterOptional.get());
+                inscription.setUserResponseList(convertUserResponsesDTOToUserResponses(inscriptionDTO.getUserResponseDTOList()));
+
+                inscription = inscriptionRepository.save(inscription);
+            }else{
+                return null;
+            }
+        }else {
+            return null;
+        }
+        return InscriptionMapper.INSTANCE.mapInscriptionToInscriptionDTO(inscription);
+    }
+
+    private int searchUserByEmail(String email){
         ResponseEntity<UserBasicDTO> response = restTemplate.exchange(
                 "http://USERS-MICROSERVICE/user/basic/" + email,
                 HttpMethod.GET,
                 new HttpEntity<>(null),
                 UserBasicDTO.class
         );
-
-        if (response.getStatusCode() == HttpStatus.OK){
-            if(response.getBody() != null){
-                return InscriptionMapper.INSTANCE.mapInscriptionListToInscriptionDTOList(inscriptionRepository.findAllUserInscriptions(response.getBody().getId()));
-            }else {
-                return null;
+        if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getBody() != null) {
+                return response.getBody().getId();
             }
-        }else{
-            return null;
         }
-    }
-
-    public InscriptionDTO inscribeUserInFitnessCenter(InscriptionDTO inscriptionDTO){
-        Optional<FitnessCenter> fitnessCenterOptional = fitnessCenterRepository.findById(inscriptionDTO.getFitnessCenterDTO().getId());
-        Inscription inscription = new Inscription();
-
-        if (fitnessCenterOptional.isPresent()){
-            inscription.setUserId(inscriptionDTO.getUserId());
-            inscription.setInscriptionDate(new Date());
-            inscription.setInscriptionStatus(InscriptionStatusEnum.PENDING);
-            inscription.setFitnessCenter(fitnessCenterOptional.get());
-            inscription.setUserResponseList(convertUserResponsesDTOToUserResponses(inscriptionDTO.getUserResponseDTOList()));
-
-            inscription = inscriptionRepository.save(inscription);
-        }else {
-            return null;
-        }
-        return InscriptionMapper.INSTANCE.mapInscriptionToInscriptionDTO(inscription);
+        return 0;
     }
 
     public Inscription changeUserInscription(int inscriptionId, InscriptionStatusEnum inscriptionStatus){
