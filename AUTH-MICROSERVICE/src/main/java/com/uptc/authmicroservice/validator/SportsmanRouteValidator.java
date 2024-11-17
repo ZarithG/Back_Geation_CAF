@@ -16,12 +16,12 @@ import java.util.regex.Pattern;
 @Data
 @Builder
 @Component
-@ConfigurationProperties(prefix = "wellbeing-director-paths")
+@ConfigurationProperties(prefix = "sportsman-paths")
 
-public class WellbeingDirectorRouteValidator {
+public class SportsmanRouteValidator {
     private List<RequestDTO> paths;
 
-    public boolean isWellbeingDirectorPath(RequestDTO requestDTO){
+    public boolean isSportsmanPaths(RequestDTO requestDTO){
         return paths.stream().anyMatch(p->
                 Pattern.matches(p.getUri(), requestDTO.getUri()) && p.getMethod().equals(requestDTO.getMethod()));
     }

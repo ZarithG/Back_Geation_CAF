@@ -69,7 +69,7 @@ public class UserService {
 
     private EmergencyContact saveUserEmergencyContact(EmergencyContact emergencyContact, UserDTO userDTO){
         EmergencyContact actEmergencyContact = userDTO.getEmergencyContact();
-        actEmergencyContact.setCity(cityService.findCityById(actEmergencyContact.getCity().getId()));
+        actEmergencyContact.setCity(cityService.findCityById(userDTO.getEmergencyContact().getCity().getId()));
         if (emergencyContact != null){
             userDTO.getEmergencyContact().setId(emergencyContact.getId());
         }
@@ -93,7 +93,7 @@ public class UserService {
 
         userToAdd.setCity(cityService.findCityById(4));
 
-        if (existingUser != null) {
+        if (existingUser.getId() != 0) {
             userToAdd.setName(existingUser.getName());
             userToAdd.setId(existingUser.getId());
             userToAdd.setUniversityInformation(saveUserUniversityInformation(existingUser.getUniversityInformation(),
