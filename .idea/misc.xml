@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/USERS-MICROSERVICE/pom.xml" />
+        <option value="$PROJECT_DIR$/EUREKA-SERVICE/pom.xml" />
+        <option value="$PROJECT_DIR$/API-GATEWAY/pom.xml" />
+        <option value="$PROJECT_DIR$/CONFIG-SERVICE/pom.xml" />
+        <option value="$PROJECT_DIR$/AUTH-MICROSERVICE/pom.xml" />
+        <option value="$PROJECT_DIR$/CAF-MICROSERVICE/pom.xml" />
+        <option value="$PROJECT_DIR$/SHIFT-MICROSERVICE/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_22" project-jdk-name="openjdk-23" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>
