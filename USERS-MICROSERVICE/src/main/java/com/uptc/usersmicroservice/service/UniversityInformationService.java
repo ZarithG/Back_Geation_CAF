@@ -17,7 +17,7 @@ public class UniversityInformationService {
     ProgramService programService;
 
     public UniversityInformation save(UniversityInformation actUniversityInformation) {
-        Program program = programService.getProgramByProgramName(actUniversityInformation.getProgram().getProgramName());
+        Program program = programService.getProgramByProgramId(actUniversityInformation.getProgram().getId());
         actUniversityInformation.setProgram(program);
         return repository.save(actUniversityInformation);
     }
