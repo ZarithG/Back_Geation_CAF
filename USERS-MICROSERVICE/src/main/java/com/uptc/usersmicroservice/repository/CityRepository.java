@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface CityRepository extends JpaRepository<City, Integer> {
+    City findCityById(int id);
     List<City> findCitiesByDepartment(Department department);
 }
 

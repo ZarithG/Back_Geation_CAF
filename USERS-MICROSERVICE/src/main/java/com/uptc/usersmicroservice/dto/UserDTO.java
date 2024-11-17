@@ -3,10 +3,8 @@ package com.uptc.usersmicroservice.dto;
 import com.uptc.usersmicroservice.entity.EmergencyContact;
 import com.uptc.usersmicroservice.entity.MedicalInformation;
 import com.uptc.usersmicroservice.entity.UniversityInformation;
-import com.uptc.usersmicroservice.enums.UserTypeEnum;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.*;
+
 import java.util.Date;
 
 @Data
@@ -25,8 +23,7 @@ public class UserDTO {
     private Date birthDate;
     private String phoneNumber;
     private String residenceAddress;
-    private String department;
-    private String city;
+    private int cityId;
 
     private EmergencyContact emergencyContact;
     private UniversityInformation universityInformation;

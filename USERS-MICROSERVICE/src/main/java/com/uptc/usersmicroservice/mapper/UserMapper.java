@@ -1,7 +1,7 @@
 package com.uptc.usersmicroservice.mapper;
 
-import com.uptc.usersmicroservice.entity.User;
 import com.uptc.usersmicroservice.dto.UserDTO;
+import com.uptc.usersmicroservice.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
