@@ -28,7 +28,10 @@ public class User {
     private UserTypeEnum userType;
     private String residenceAddress;
     private String department;
-    private String city;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id", referencedColumnName = "id", nullable = false)
+    private City city;
 
     @OneToOne
     @JoinColumn(name = "emergency_contact_id", referencedColumnName = "id")

@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://junction.proxy.rlwy.net:40476/UsersDB?createDatabaseIfNotExist=true
     username: root
-    password: 'uBraPdmSSSBPQnkHdGiWRUMbfaEFyFNR'
+    password: uBraPdmSSSBPQnkHdGiWRUMbfaEFyFNR
 
 server:
   port: ${PORT:${SERVER_PORT:0}}
