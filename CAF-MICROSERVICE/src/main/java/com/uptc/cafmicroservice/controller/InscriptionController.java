@@ -19,9 +19,9 @@ public class InscriptionController {
     @Autowired
     InscriptionService inscriptionService;
 
-    @PostMapping("/inscribe-user")
-    public ResponseEntity<InscriptionDTO> inscribeUserInFitnessCenter(@RequestBody InscriptionDTO inscriptionDTO) {
-        InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO);
+    @PostMapping("/inscribe-user/{email}")
+    public ResponseEntity<InscriptionDTO> inscribeUserInFitnessCenter(@RequestBody InscriptionDTO inscriptionDTO, @PathVariable String email) {
+        InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO, email);
         if (inscriptionDTOResponse == null) {
             return ResponseEntity.noContent().build();
         }
