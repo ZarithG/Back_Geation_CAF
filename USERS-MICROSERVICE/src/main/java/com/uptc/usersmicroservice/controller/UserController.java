@@ -61,6 +61,15 @@ public class UserController {
         return ResponseEntity.ok(UserMapper.INSTANCE.mapUserToUserDTO(user));
     }
 
+    @GetMapping("/isUserOldMayor/{email}")
+    public ResponseEntity<Boolean> isUserOldMayor(@PathVariable("email") String email){
+        boolean isUserOldMayor = userService.isUserOldMayor(email);
+        if (isUserOldMayor) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
         System.out.println("LLEGO A GUARDAR");

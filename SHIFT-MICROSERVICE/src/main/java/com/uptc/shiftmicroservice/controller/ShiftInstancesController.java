@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/shift-instances")
+@RequestMapping("/shift/shift-instances")
 public class ShiftInstancesController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class ShiftInstancesController {
         }
     }
 
-    @GetMapping("/actShift/{act}")
+    @PostMapping("/actShift/{act}")
     public ResponseEntity<ShiftInstanceDTO> getActualShiftByCAF(@PathVariable("caf") int idFitnessCenter){
         Optional<ShiftInstance> actShift = shiftInstanceService.obtainActShiftInstance(idFitnessCenter);
         if(actShift.isPresent()){

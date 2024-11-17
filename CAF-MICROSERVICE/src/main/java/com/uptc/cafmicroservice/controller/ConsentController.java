@@ -21,9 +21,18 @@ public class ConsentController {
     @Autowired
     ConsentService consentService;
 
+//    @PostMapping("/upload/{inscriptionId}")
+//    public ResponseEntity<Boolean> uploadInscriptionFiles(@PathVariable int inscriptionId, @RequestParam("inscriptionFiles") MultipartFile[] files, @RequestParam("fileTypes") ConsentTypeEnum[] types){
+//        boolean wasCorrectlyUploaded = consentService.saveConsentFiles(inscriptionId, files, types);
+//        if (!wasCorrectlyUploaded) {
+//            return ResponseEntity.noContent().build();
+//        }
+//        return ResponseEntity.ok(true);
+//    }
+
     @PostMapping("/upload/{inscriptionId}")
-    public ResponseEntity<Boolean> uploadInscriptionFiles(@PathVariable int inscriptionId, @RequestParam("inscriptionFiles") MultipartFile[] files, @RequestParam("fileTypes") ConsentTypeEnum[] types){
-        boolean wasCorrectlyUploaded = consentService.saveConsentFiles(inscriptionId, files, types);
+    public ResponseEntity<Boolean> uploadInscriptionFiles(@PathVariable int inscriptionId, @RequestParam("inscriptionFile") MultipartFile file, @RequestParam("fileType") ConsentTypeEnum type){
+        boolean wasCorrectlyUploaded = consentService.saveConsentFiles(inscriptionId, file, type);
         if (!wasCorrectlyUploaded) {
             return ResponseEntity.noContent().build();
         }

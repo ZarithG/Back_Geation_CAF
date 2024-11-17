@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/reserve")
+@RequestMapping("/shift/reserve")
 public class ReservationController {
     @Autowired
     DayAssignmentService dayAssignmentService;
@@ -44,6 +44,8 @@ public class ReservationController {
         return ResponseEntity.ok(shiftsInstances);
     }
 
+    //Metodo para listar las instancias de turnso disponibles para cda CAF,
+    // Listar los turnos disponibles visibles para un usuario
     @GetMapping("/shift-instances-caf/{idCaf}")
     public ResponseEntity<List<ShiftInstance>> allShiftInstancesByCaf(@PathVariable("idCaf") int idCaf ){
         List<ShiftInstance> shiftInstancesAvailable = shiftInstanceService.findAllShiftInstancesByCaf(idCaf);

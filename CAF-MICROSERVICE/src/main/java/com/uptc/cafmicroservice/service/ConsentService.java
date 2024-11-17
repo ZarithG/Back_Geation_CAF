@@ -45,32 +45,57 @@ public class ConsentService {
         Files.createDirectories(rootLocation);
     }
 
-    public boolean saveConsentFiles(int inscriptionId, MultipartFile[] files, ConsentTypeEnum[] types) {
-        for (int i = 0; i < files.length; i++) {
-            MultipartFile file = files[i];
-            ConsentTypeEnum type = types[i];
+//    public boolean saveConsentFiles(int inscriptionId, MultipartFile[] files, ConsentTypeEnum[] types) {
+//        for (int i = 0; i < files.length; i++) {
+//            MultipartFile file = files[i];
+//            ConsentTypeEnum type = types[i];
+//
+//            Inscription inscription = inscriptionRepository.findInscriptionById(inscriptionId);
+//
+//            if(inscription != null){
+//                String filePath = saveFileInConsentTypeFolder(inscription.getInscriptionDate(),
+//                        inscription.getUserId(), file, type);
+//                if(!filePath.isEmpty()){
+//                    Consent consent = new Consent();
+//                    consent.setConsentType(type);
+//                    consent.setFilePath(filePath);
+//                    consent.setInscription(inscription);
+//                    consent = consentRepository.save(consent);
+//
+//                    if(consent.getId() == 0){
+//                        return false;
+//                    }
+//                }else{
+//                    return false;
+//                }
+//            }else{
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
-            Inscription inscription = inscriptionRepository.findInscriptionById(inscriptionId);
+    public boolean saveConsentFiles(int inscriptionId, MultipartFile file, ConsentTypeEnum type) {
+        Inscription inscription = inscriptionRepository.findInscriptionById(inscriptionId);
 
-            if(inscription != null){
-                String filePath = saveFileInConsentTypeFolder(inscription.getInscriptionDate(),
-                        inscription.getUserId(), file, type);
-                if(!filePath.isEmpty()){
-                    Consent consent = new Consent();
-                    consent.setConsentType(type);
-                    consent.setFilePath(filePath);
-                    consent.setInscription(inscription);
-                    consent = consentRepository.save(consent);
+        if(inscription != null){
+            String filePath = saveFileInConsentTypeFolder(inscription.getInscriptionDate(),
+                    inscription.getUserId(), file, type);
+            if(!filePath.isEmpty()){
+                Consent consent = new Consent();
+                consent.setConsentType(type);
+                consent.setFilePath(filePath);
+                consent.setInscription(inscription);
+                consent = consentRepository.save(consent);
 
-                    if(consent.getId() == 0){
-                        return false;
-                    }
-                }else{
+                if(consent.getId() == 0){
                     return false;
                 }
             }else{
                 return false;
             }
+        }else{
+            return false;
         }
         return true;
     }

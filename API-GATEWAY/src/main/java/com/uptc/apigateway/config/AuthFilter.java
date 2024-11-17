@@ -12,6 +12,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+/**
+ * Clase de configuración para filtrar las peticiones verificando que se tenga el rol necesario y el token valido
+ */
 @Component
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
 
@@ -21,6 +24,12 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
         super(Config.class);
         this.webClient = webClient;
     }
+
+    /**
+     * Método que verifica que un token no este vencido, y así mismo, que la URL a la que quiere acceder concuerde con el rol del usuario
+     * @param config
+     * @return
+     */
     @Override
     public GatewayFilter apply(Config config) {
         return (((exchange, chain) -> {
