@@ -54,12 +54,12 @@ public class AuthUserController {
     }
 
     @GetMapping("/user/all")
-    public ResponseEntity<List<AuthUserDTO>> getAllUser(){
-        List<AuthUserDTO> authUserDTOList = authUserService.getAllUser();
-        if(authUserDTOList.isEmpty()){
+    public ResponseEntity<List<AuthUserCompleteDTO>> getAllUser(){
+        List<AuthUserCompleteDTO> authUserCompleteDTOList = authUserService.getAllUser();
+        if(authUserCompleteDTOList.isEmpty()){
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(authUserDTOList);
+        return ResponseEntity.ok(authUserCompleteDTOList);
     }
 
     @PostMapping("/validate")

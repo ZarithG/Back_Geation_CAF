@@ -1,8 +1,6 @@
 package com.uptc.authmicroservice.service;
 
-import com.uptc.authmicroservice.dto.AuthUserDTO;
-import com.uptc.authmicroservice.dto.RequestDTO;
-import com.uptc.authmicroservice.dto.TokenDTO;
+import com.uptc.authmicroservice.dto.*;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
 import com.uptc.authmicroservice.enums.RoleEnum;
@@ -14,8 +12,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +35,9 @@ public class AuthUserService {
 
     @Autowired
     JwtProvider jwtProvider;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     public AuthUser save(AuthUserDTO dto) {
         Optional<AuthUser> user = authUserRepository.findByUserName(dto.getUserName());
@@ -98,9 +103,9 @@ public class AuthUserService {
         return authUser;
     }
 
-    public List<AuthUserDTO> getAllUser(){
+    public List<AuthUserCompleteDTO> getAllUser(){
         List<AuthUser> authUserList = authUserRepository.findAll();
-        List<AuthUserDTO> authUserDTOList = new ArrayList<>();
+        List<AuthUserCompleteDTO> authUserDTOList = new ArrayList<>();
 
         for (AuthUser authUser : authUserList){
             boolean isAdmin = false;
@@ -111,11 +116,26 @@ public class AuthUserService {
                 }
             }
             if(!isAdmin){
-                AuthUserDTO authUserDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser);
-                authUserDTO.setPassword(null);
-                authUserDTO.setActive(authUser.isActive());
-                authUserDTO.setUserVerified(authUser.isUserVerified());
-                authUserDTOList.add(authUserDTO);
+                System.out.println(authUser.getUserName());
+                ResponseEntity<UserBasicDTO> responseFromBasicUser = restTemplate.exchange(
+                        "http://USERS-MICROSERVICE/user/basic/" + authUser.getUserName(),
+                        HttpMethod.GET,
+                        new HttpEntity<>(null),
+                        UserBasicDTO.class
+                );
+
+                UserBasicDTO userBasicDTO = responseFromBasicUser.getBody();
+
+                AuthUserCompleteDTO authUserCompleteDTO = new AuthUserCompleteDTO();
+                authUserCompleteDTO.setId(authUser.getId());
+                authUserCompleteDTO.setName(userBasicDTO.getName());
+                System.out.println(userBasicDTO.getName());
+                authUserCompleteDTO.setUserName(authUser.getUserName());
+                authUserCompleteDTO.setActive(authUser.isActive());
+                System.out.println(authUser.isActive());
+                authUserCompleteDTO.setUserVerified(authUser.isUserVerified());
+                System.out.println(authUser.isUserVerified());
+                authUserDTOList.add(authUserCompleteDTO);
             }
         }
         return authUserDTOList;

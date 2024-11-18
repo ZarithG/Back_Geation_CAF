@@ -48,6 +48,8 @@ public class UserController {
 
         UserBasicDTO userBasicDTO = new UserBasicDTO();
         userBasicDTO.setId(user.getId());
+        userBasicDTO.setName(user.getName());
+        System.out.println(user.getName());
         userBasicDTO.setEmail(user.getEmail());
         return ResponseEntity.ok(userBasicDTO);
     }
@@ -72,9 +74,7 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
-        System.out.println("LLEGO A GUARDAR");
         User userToSave = userService.saveUser(userDTO);
-        System.out.println("USER: " + userToSave);
         if (userToSave != null){
             UserDTO savedUserDTO = UserMapper.INSTANCE.mapUserToUserDTO(userToSave);
             savedUserDTO.setUniversityInformation(userToSave.getUniversityInformation());
