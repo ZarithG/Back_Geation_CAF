@@ -40,7 +40,7 @@ public class InscriptionService {
     public List<InscriptionDTO> getAllInscriptionByFitnessCenter(int fitnessCenterId){
         if (fitnessCenterRepository.existsById(fitnessCenterId)){
             List<InscriptionDTO> inscriptionDTOList = new ArrayList<>();
-            List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptions(userId);
+            List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptions(fitnessCenterId);
             for (Inscription inscription : inscriptionList){
                 InscriptionDTO inscriptionDTO = new InscriptionDTO();
                 inscriptionDTO.setId(inscription.getId());
@@ -54,7 +54,7 @@ public class InscriptionService {
 
 
 
-            return inscriptionRepository.findFitnessCenterInscriptions(fitnessCenterId);
+            //return inscriptionRepository.findFitnessCenterInscriptions(fitnessCenterId);
         }else{
             return null;
         }
