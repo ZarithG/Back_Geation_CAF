@@ -1,6 +1,7 @@
 package com.uptc.cafmicroservice.controller;
 
 import com.uptc.cafmicroservice.dto.InscriptionDTO;
+import com.uptc.cafmicroservice.dto.UserResponseDTO;
 import com.uptc.cafmicroservice.entity.Inscription;
 import com.uptc.cafmicroservice.enums.ConsentTypeEnum;
 import com.uptc.cafmicroservice.enums.InscriptionStatusEnum;
@@ -21,11 +22,13 @@ public class InscriptionController {
 
     @PostMapping("/inscribe-user/{email}")
     public ResponseEntity<InscriptionDTO> inscribeUserInFitnessCenter(@RequestBody InscriptionDTO inscriptionDTO, @PathVariable String email) {
-        InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO, email);
-        if (inscriptionDTOResponse == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(inscriptionDTOResponse);
+//        InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO, email);
+//        if (inscriptionDTOResponse == null) {
+//            return ResponseEntity.noContent().build();
+//        }
+//        return ResponseEntity.ok(inscriptionDTOResponse);
+        return ResponseEntity.ok(InscriptionDTO.builder().id(2).
+                build());
     }
 
     @PostMapping("/accept-inscription/{inscriptionId}")
