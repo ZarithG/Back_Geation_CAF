@@ -111,7 +111,11 @@ public class AuthUserService {
                 }
             }
             if(!isAdmin){
-                authUserDTOList.add(AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser));
+                AuthUserDTO authUserDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser);
+                authUserDTO.setPassword(null);
+                authUserDTO.setActive(authUser.isActive());
+                authUserDTO.setUserVerified(authUser.isUserVerified());
+                authUserDTOList.add(authUserDTO);
             }
         }
         return authUserDTOList;
