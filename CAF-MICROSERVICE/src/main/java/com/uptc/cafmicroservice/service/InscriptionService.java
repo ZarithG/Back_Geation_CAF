@@ -7,6 +7,7 @@ import com.uptc.cafmicroservice.entity.FitnessCenter;
 import com.uptc.cafmicroservice.entity.Inscription;
 import com.uptc.cafmicroservice.entity.UserResponse;
 import com.uptc.cafmicroservice.enums.InscriptionStatusEnum;
+import com.uptc.cafmicroservice.mapper.FitnessCenterMapper;
 import com.uptc.cafmicroservice.mapper.InscriptionMapper;
 import com.uptc.cafmicroservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,23 @@ public class InscriptionService {
     @Autowired
     RestTemplate restTemplate;
 
-    public List<Inscription> getAllInscriptionByFitnessCenter(int fitnessCenterId){
+    public List<InscriptionDTO> getAllInscriptionByFitnessCenter(int fitnessCenterId){
         if (fitnessCenterRepository.existsById(fitnessCenterId)){
+            List<InscriptionDTO> inscriptionDTOList = new ArrayList<>();
+            List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptions(userId);
+            for (Inscription inscription : inscriptionList){
+                InscriptionDTO inscriptionDTO = new InscriptionDTO();
+                inscriptionDTO.setId(inscription.getId());
+                inscriptionDTO.setInscriptionDate(inscription.getInscriptionDate());
+                inscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
+                inscriptionDTO.setFitnessCenterDTO(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(inscription.getFitnessCenter()));
+                inscriptionDTOList.add(inscriptionDTO);
+            }
+            return inscriptionDTOList;
+
+
+
+
             return inscriptionRepository.findFitnessCenterInscriptions(fitnessCenterId);
         }else{
             return null;
@@ -48,7 +64,17 @@ public class InscriptionService {
         int userId = searchUserByEmail(email);
 
         if(userId != 0){
-            return InscriptionMapper.INSTANCE.mapInscriptionListToInscriptionDTOList(inscriptionRepository.findAllUserInscriptions(userId));
+            List<InscriptionDTO> inscriptionDTOList = new ArrayList<>();
+            List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptions(userId);
+            for (Inscription inscription : inscriptionList){
+                InscriptionDTO inscriptionDTO = new InscriptionDTO();
+                inscriptionDTO.setId(inscription.getId());
+                inscriptionDTO.setInscriptionDate(inscription.getInscriptionDate());
+                inscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
+                inscriptionDTO.setFitnessCenterDTO(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(inscription.getFitnessCenter()));
+                inscriptionDTOList.add(inscriptionDTO);
+            }
+            return inscriptionDTOList;
         }
         return null;
     }
