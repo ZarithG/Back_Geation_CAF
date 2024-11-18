@@ -24,9 +24,6 @@ public class AuthUserController {
     @Autowired
     AuthUserService authUserService;
 
-    @Autowired
-    JwtProvider jwtProvider;
-
     @PostMapping("/login")
     public ResponseEntity<AuthUserDTO> login(@RequestBody AuthUserDTO dto){
         TokenDTO tokenDto = authUserService.login(dto);

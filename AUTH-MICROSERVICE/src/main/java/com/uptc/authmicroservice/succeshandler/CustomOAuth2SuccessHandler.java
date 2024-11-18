@@ -64,7 +64,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
             if (user == null || userDTOResponseEntity.getBody() == null) {
                 AuthUserDTO userDTOToCreate = new AuthUserDTO();
-                System.out.println("EMAIL: " + email);
                 userDTOToCreate.setUserName(email);
                 userDTOToCreate.setPictureUrl(pictureUrl);
                 userDTOToCreate.setActive(true);
@@ -114,7 +113,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             for (int i = 0; i < authUser.getRoles().toArray().length; i++){
                 if(authUser.getRoles().toArray()[i].equals(RoleEnum.ROLE_USER)){
                     isUser = true;
-                    targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
+                    targetUrl = UriComponentsBuilder.fromUriString("https://cafuptc.netlify.app/register/informationData")
                             .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
                             .build().toUriString();
                     getRedirectStrategy().sendRedirect(request, response, targetUrl);
@@ -122,7 +121,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             }
 
             if(!isUser){
-                targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/")
+                targetUrl = UriComponentsBuilder.fromUriString("https://cafuptc.netlify.app/")
                         .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
                         .build().toUriString();
                 getRedirectStrategy().sendRedirect(request, response, targetUrl);
@@ -130,7 +129,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         }catch (Exception e){
             authUserService.logout(request, response);
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://cafuptc.netlify.app/")
                     .build().toUriString();
 
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
