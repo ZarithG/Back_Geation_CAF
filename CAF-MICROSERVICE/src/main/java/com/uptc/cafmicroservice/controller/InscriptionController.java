@@ -27,8 +27,6 @@ public class InscriptionController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(inscriptionDTOResponse);
-//        return ResponseEntity.ok(InscriptionDTO.builder().id(2).
-//                build());
     }
 
     @PostMapping("/accept-inscription/{inscriptionId}")
