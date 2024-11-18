@@ -109,7 +109,9 @@ public class AuthUserService {
 
         for (AuthUser authUser : authUserList){
             boolean isAdmin = false;
+            List<String> roles = new ArrayList<>();
             for (Role role : authUser.getRoles()){
+                roles.add(role.getRoleName().name());
                 if(role.getRoleName().equals(RoleEnum.ROLE_ADMIN)) {
                     isAdmin = true;
                     break;
@@ -130,6 +132,7 @@ public class AuthUserService {
                 authUserCompleteDTO.setId(authUser.getId());
                 authUserCompleteDTO.setName(userBasicDTO.getName());
                 authUserCompleteDTO.setUserName(authUser.getUserName());
+                authUserCompleteDTO.setRoles(roles);
                 authUserCompleteDTO.setActive(authUser.isActive());
                 authUserCompleteDTO.setUserVerified(authUser.isUserVerified());
                 authUserDTOList.add(authUserCompleteDTO);
