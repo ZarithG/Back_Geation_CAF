@@ -112,16 +112,19 @@ public class ShiftInstanceService {
             System.out.println("ENTRÓ A INSTANCIA SIN CREAR PARA ESE DÍA");
             Optional<List<ShiftInstance>> lastShiftInstance = shiftInstanceRepository.findTopByStateTrueOrderByDateDesc();
             System.out.println("LAST "+lastShiftInstance.isPresent());
-            if(!lastShiftInstance.isPresent()){
-                System.out.println("HOOOOOLLLLLLAAAA"+dayAssignment.get().getId());
+            if(lastShiftInstance.isPresent()){
                 List<ShiftDTO> shifts = shiftService.getShiftsByDayAssignment(dayAssignment.get().getId());
-
                 for (ShiftDTO shift : shifts) {
                     System.out.println("VERIFICANDO SHIFTS");
                     if(shift.getStartTime().isAfter(LocalDateTime.now().toLocalTime())){
                         shiftInstancesList.add(addShiftInstance(actDate, ShiftMapper.INSTANCE.shiftDTOToShift(shift),dayAssignment.get().getFitnessCenter()));
                     }
                 }
+//                for(ShiftInstance instance : lastShiftInstance.get()){
+//                    if(instance == null){
+//
+//                    }
+//                }
             }
         }
         return shiftInstancesList != null ? shiftInstancesList : new ArrayList<>();

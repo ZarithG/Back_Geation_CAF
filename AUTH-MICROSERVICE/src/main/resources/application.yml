@@ -162,7 +162,7 @@ caf-coordinator-paths:
 
     - uri: "/shift/shift-instances/finishShift/{1}[1-9]+[0-9]*"
       method: "POST"
-      
+
     - uri: "/shift/shift-instances/actShift/{1}[1-9]+[0-9]*"
       method: "POST"
 
