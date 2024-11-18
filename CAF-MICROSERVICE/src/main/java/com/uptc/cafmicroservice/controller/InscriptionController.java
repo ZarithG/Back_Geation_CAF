@@ -22,13 +22,11 @@ public class InscriptionController {
 
     @PostMapping("/inscribe-user/{email}")
     public ResponseEntity<InscriptionDTO> inscribeUserInFitnessCenter(@RequestBody InscriptionDTO inscriptionDTO, @PathVariable String email) {
-//        InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO, email);
-//        if (inscriptionDTOResponse == null) {
-//            return ResponseEntity.noContent().build();
-//        }
-//        return ResponseEntity.ok(inscriptionDTOResponse);
-        return ResponseEntity.ok(InscriptionDTO.builder().id(2).
-                build());
+        InscriptionDTO inscriptionDTOResponse = inscriptionService.inscribeUserInFitnessCenter(inscriptionDTO, email);
+        if (inscriptionDTOResponse == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(inscriptionDTOResponse);
     }
 
     @PostMapping("/accept-inscription/{inscriptionId}")
