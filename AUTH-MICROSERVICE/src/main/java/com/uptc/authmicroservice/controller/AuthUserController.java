@@ -2,6 +2,8 @@ package com.uptc.authmicroservice.controller;
 
 import com.uptc.authmicroservice.dto.*;
 import com.uptc.authmicroservice.entity.AuthUser;
+import com.uptc.authmicroservice.entity.Role;
+import com.uptc.authmicroservice.enums.RoleEnum;
 import com.uptc.authmicroservice.mapper.AuthUserMapper;
 import com.uptc.authmicroservice.security.JwtProvider;
 import com.uptc.authmicroservice.service.AuthUserService;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
@@ -26,8 +30,13 @@ public class AuthUserController {
     @PostMapping("/login")
     public ResponseEntity<AuthUserDTO> login(@RequestBody AuthUserDTO dto){
         TokenDTO tokenDto = authUserService.login(dto);
-        if(tokenDto == null)
+        if(tokenDto == null) {
             return ResponseEntity.badRequest().build();
+        }else{
+            if(tokenDto.getToken().isEmpty()){
+                return ResponseEntity.noContent().build();
+            }
+        }
 
         AuthUser authUser = authUserService.getUserByUserName(dto.getUserName());
         AuthUserDTO authUserDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser);
@@ -42,6 +51,15 @@ public class AuthUserController {
     @RequestMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         authUserService.logout(request, response);
+    }
+
+    @GetMapping("/user/all")
+    public ResponseEntity<List<AuthUserDTO>> getAllUser(){
+        List<AuthUserDTO> authUserDTOList = authUserService.getAllUser();
+        if(authUserDTOList.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(authUserDTOList);
     }
 
     @PostMapping("/validate")

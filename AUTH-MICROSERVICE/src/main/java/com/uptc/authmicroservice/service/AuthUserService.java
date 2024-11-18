@@ -6,6 +6,7 @@ import com.uptc.authmicroservice.dto.TokenDTO;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
 import com.uptc.authmicroservice.enums.RoleEnum;
+import com.uptc.authmicroservice.mapper.AuthUserMapper;
 import com.uptc.authmicroservice.repository.AuthUserRepository;
 import com.uptc.authmicroservice.repository.RoleRepository;
 import com.uptc.authmicroservice.security.JwtProvider;
@@ -16,10 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthUserService {
@@ -53,7 +52,12 @@ public class AuthUserService {
         if(user.isEmpty())
             return null;
         if(passwordEncoder.matches(authUserDTO.getPassword(), user.get().getPassword()))
-            return new TokenDTO(jwtProvider.createToken(user.get()));
+            if (user.get().isActive())
+                return new TokenDTO(jwtProvider.createToken(user.get()));
+            else
+                return TokenDTO.builder()
+                        .token("")
+                        .build();
         return null;
     }
 
@@ -94,6 +98,29 @@ public class AuthUserService {
         return authUser;
     }
 
+    public List<AuthUserDTO> getAllUser(){
+        List<AuthUser> authUserList = authUserRepository.findAll();
+        List<AuthUserDTO> authUserDTOList = new ArrayList<>();
+
+        for (AuthUser authUser : authUserList){
+            boolean isAdmin = false;
+            for (Role role : authUser.getRoles()){
+                if(role.getRoleName().equals(RoleEnum.ROLE_ADMIN)) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+            if(!isAdmin){
+                AuthUserDTO authUserDTO = AuthUserMapper.INSTANCE.mapUserToUserDTO(authUser);
+                authUserDTO.setPassword(null);
+                authUserDTO.setActive(authUser.isActive());
+                authUserDTO.setUserVerified(authUser.isUserVerified());
+                authUserDTOList.add(authUserDTO);
+            }
+        }
+        return authUserDTOList;
+    }
+
     public AuthUser changeAuthUserPassword(String userName, String password){
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
         AuthUser userChanged = null;
@@ -105,9 +132,10 @@ public class AuthUserService {
         return userChanged;
     }
 
-    public Set<Role> getRolesByUserName(String userName){
+    public List<Role> getRolesByUserName(String userName){
         Optional<AuthUser> user = authUserRepository.findByUserName(userName);
-        return user.map(AuthUser::getRoles).orElse(null);
+        List<Role> roleList = user.get().getRoles().stream().collect(Collectors.toList());
+        return roleList;
     }
 
     public AuthUser changeAuthUserState(String userName, boolean authUserState){
