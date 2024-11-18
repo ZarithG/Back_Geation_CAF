@@ -43,6 +43,7 @@ public class AuthUserService {
                 .userName(dto.getUserName())
                 .password("DEFAULT")
                 .roles(dto.getRoles())
+                .isActive(dto.isActive())
                 .build();
         return authUserRepository.save(authUser);
     }
