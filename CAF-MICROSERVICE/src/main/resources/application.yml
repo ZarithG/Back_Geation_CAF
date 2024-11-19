@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://autorack.proxy.rlwy.net:11940/CafDB?createDatabaseIfNotExist=true
     username: root
-    password: ${DB_PASSWORD}
+    password: dGHbPPRRHBvWareoMjJvlUGabalVYVZU
   servlet:
     multipart:
       max-file-size: 5MB
