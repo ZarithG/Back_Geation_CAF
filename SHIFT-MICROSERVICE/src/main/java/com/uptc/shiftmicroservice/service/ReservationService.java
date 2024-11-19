@@ -101,4 +101,8 @@ public class ReservationService {
     public Reservation deleteReservation(long idReservation){
         return reservationRepository.findById(idReservation).orElse(null);
     }
+
+    public List<Reservation> getAllReservationsByActualShiftInstanceId(long actualInstanceId){
+        return reservationRepository.findAllByShiftInstance_Id(actualInstanceId);
+    }
 }

@@ -22,4 +22,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT r FROM Reservation r WHERE r.reservationEnum = 'SCHEDULED' AND r.userId = :userId")
     List<Reservation> findAllByReservationEnumScheduled(int userId);
+
+    @Query("SELECT r FROM Reservation r WHERE r.reservationEnum != 'ATTENDED' AND r.shiftInstance.id = :idShift")
+    List<Reservation> findAllByShiftInstance_Id(long idShift);
 }
