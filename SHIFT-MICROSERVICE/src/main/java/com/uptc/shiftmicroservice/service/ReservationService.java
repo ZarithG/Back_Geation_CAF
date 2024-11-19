@@ -37,9 +37,8 @@ public class ReservationService {
                 System.out.println("VERIFICANDO OTROS TURNOS");
                 if(reservation.isEmpty()){
                     Reservation newReservation = new Reservation();
-                    newReservation.setDateReservation(reservationDTO.getDateReservation());
+                    newReservation.setDateReservation(LocalDateTime.now());
                     newReservation.setShiftInstance(shiftInstance.get());
-                    newReservation.setDateReservation(reservationDTO.getDateReservation());
                     newReservation.setUserId(reservationDTO.getUserId());
                     newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
                     return Optional.of(reservationRepository.save(newReservation));
