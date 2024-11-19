@@ -41,7 +41,7 @@ public class ReservationService {
                     newReservation.setShiftInstance(shiftInstance.get());
                     newReservation.setDateReservation(reservationDTO.getDateReservation());
                     newReservation.setUserId(reservationDTO.getUserId());
-                    newReservation.setReservationEnum(ReservationEnum.NOT_ATTENDED);
+                    newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
                     return Optional.of(reservationRepository.save(newReservation));
                 } else{
                     return Optional.empty();
