@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +20,17 @@ public interface ShiftInstanceRepository extends JpaRepository<ShiftInstance, Lo
     @Query("SELECT s FROM ShiftInstance s JOIN s.dayAssignment d WHERE d.fitnessCenter = :fitnessCenter AND s.date = :date AND s.state = TRUE")
     List<ShiftInstance> findShiftInstancesByFitnessCenterAndDate(@Param("fitnessCenter") int fitnessCenter, @Param("date") LocalDate date);
 
-    @Query("SELECT s FROM ShiftInstance s " +
-            "WHERE s.fitnessCenter = :fitnessCenter " +
+//    @Query(value = "SELECT s FROM shift_instance s WHERE s.fitness_center = :fitnessCenter AND s.date = CURRENT_DATE AND TIME(CURRENT_TIME) BETWEEN s.start_time AND s.end_time", nativeQuery = true)
+//    List<ShiftInstance> findActiveShiftsByFitnessCenterAndCurrentTime(
+//            @Param("fitnessCenter") int fitnessCenter);
+
+    @Query(value = "SELECT * FROM shift_instance s " +
+            "WHERE s.fitness_center = :fitnessCenter " +
             "AND s.date = CURRENT_DATE " +
-            "AND CURRENT_TIME BETWEEN s.startTime AND s.endTime")
+            "AND Time(:timeAct) BETWEEN s.start_time AND s.end_time",
+            nativeQuery = true)
     List<ShiftInstance> findActiveShiftsByFitnessCenterAndCurrentTime(
-            @Param("fitnessCenter") int fitnessCenter);
+            @Param("fitnessCenter") int fitnessCenter,@Param("timeAct") LocalTime timeAct);
+
+
 }
