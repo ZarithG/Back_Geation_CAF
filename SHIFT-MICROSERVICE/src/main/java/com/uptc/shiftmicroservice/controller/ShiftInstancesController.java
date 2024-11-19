@@ -33,6 +33,7 @@ public class ShiftInstancesController {
         }
     }
 
+    //Método para obtener el turno actual que se está atendiendo en el CAF
     @PostMapping("/actShift/{act}")
     public ResponseEntity<ShiftInstanceDTO> getActualShiftByCAF(@PathVariable("caf") int idFitnessCenter){
         Optional<ShiftInstance> actShift = shiftInstanceService.obtainActShiftInstance(idFitnessCenter);

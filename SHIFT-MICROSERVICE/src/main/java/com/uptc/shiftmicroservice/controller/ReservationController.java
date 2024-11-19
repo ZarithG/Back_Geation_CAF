@@ -52,6 +52,15 @@ public class ReservationController {
         return ResponseEntity.ok(shiftInstancesAvailable);
     }
 
+    @GetMapping("/all-reservations-by-shift-instance/{shiftId}")
+    public ResponseEntity<List<Reservation>> getAllReservationForActualShift(@PathVariable("shiftId") long shiftId){
+        List<Reservation> reservations = reservationService.getAllReservationsByActualShiftInstanceId(shiftId);
+        if(reservations.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reservations);
+    }
+
     //Metodo para registrar asistencia
     @PostMapping("/registry-attended-reserve")
     public ResponseEntity<?> registryReservationUser(@RequestBody ReservationDTO reservationDTO){
