@@ -177,7 +177,7 @@ public class ShiftInstanceService {
     }
 
     public Optional<ShiftInstance> obtainActShiftInstance(int fitnessCenter){
-        List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter);
+        List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter, LocalTime.now());
         if(shiftInstances.size() > 0){
             return Optional.of(shiftInstances.get(0));
         }

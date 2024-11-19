@@ -42,7 +42,22 @@ public class UserController {
     @GetMapping("/basic/{email}")
     public ResponseEntity<UserBasicDTO> getBasicUserByEmail(@PathVariable("email") String userEmail){
         User user = userService.getUserByEmail(userEmail);
-        if (user == null) {
+        if (user.getId() == 0) {
+            return ResponseEntity.noContent().build();
+        }
+
+        UserBasicDTO userBasicDTO = new UserBasicDTO();
+        userBasicDTO.setId(user.getId());
+        userBasicDTO.setName(user.getName());
+        System.out.println(user.getName());
+        userBasicDTO.setEmail(user.getEmail());
+        return ResponseEntity.ok(userBasicDTO);
+    }
+
+    @GetMapping("/basic/user-id/{userId}")
+    public ResponseEntity<UserBasicDTO> getBasicUserById(@PathVariable("userId") int userId){
+        User user = userService.getUserById(userId);
+        if (user.getId() == 0) {
             return ResponseEntity.noContent().build();
         }
 
