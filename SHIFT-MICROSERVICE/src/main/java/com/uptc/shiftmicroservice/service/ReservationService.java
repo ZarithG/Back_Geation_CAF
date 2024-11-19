@@ -33,7 +33,7 @@ public class ReservationService {
             //Verificar los cupos disponibles
             System.out.println("CUPOS reservados:" + totalReserves);
             if(( shiftInstance.get().getPlaceAvailable() - totalReserves) > 0){
-                List<Reservation> reservation = reservationRepository.findAllByReservationEnumNotAttendedAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
+                List<Reservation> reservation = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
                 System.out.println("VERIFICANDO OTROS TURNOS");
                 if(reservation.isEmpty()){
                     Reservation newReservation = new Reservation();
@@ -41,7 +41,7 @@ public class ReservationService {
                     newReservation.setShiftInstance(shiftInstance.get());
                     newReservation.setDateReservation(reservationDTO.getDateReservation());
                     newReservation.setUserId(reservationDTO.getUserId());
-                    newReservation.setReservationEnum(ReservationEnum.NOT_ATTENDED);
+                    newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
                     return Optional.of(reservationRepository.save(newReservation));
                 } else{
                     return Optional.empty();
@@ -95,4 +95,11 @@ public class ReservationService {
             return false;
     }
 
+    public List<Reservation> getAllReservationForUser(int userId){
+        return reservationRepository.findAllByReservationEnumScheduled(userId);
+    }
+
+    public Reservation deleteReservation(long idReservation){
+        return reservationRepository.findById(idReservation).orElse(null);
+    }
 }

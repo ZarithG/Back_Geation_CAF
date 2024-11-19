@@ -19,27 +19,45 @@ import java.util.Set;
 
 @Service
 public class FitnessCenterService {
+    // Inyección de la dependencia de FitnessCenterRepository
     @Autowired
     FitnessCenterRepository fitnessCenterRepository;
 
+    // Inyección de la dependencia de RestTemplate para realizar llamadas a servicios externos
     @Autowired
     RestTemplate restTemplate;
 
+    /**
+     * Obtiene todos los centros de fitness almacenados en la base de datos.
+     * @return Lista de objetos FitnessCenter.
+     */
     public List<FitnessCenter> getAll() {
-        return fitnessCenterRepository.findAll();
+        return fitnessCenterRepository.findAll(); // Devuelve la lista completa de centros de fitness
     }
 
-    public FitnessCenter changeFitnessCenterCoordinator(int fitnessCenterId, String userEmail){
-        if(fitnessCenterRepository.existsById(fitnessCenterId)){
+    /**
+     * Cambia el coordinador de un centro de fitness dado su ID y el email del nuevo coordinador.
+     * @param fitnessCenterId El ID del centro de fitness.
+     * @param userEmail El email del nuevo coordinador.
+     * @return El objeto FitnessCenter actualizado o null si el cambio falla.
+     */
+    public FitnessCenter changeFitnessCenterCoordinator(int fitnessCenterId, String userEmail) {
+        // Verifica si el centro de fitness existe
+        if (fitnessCenterRepository.existsById(fitnessCenterId)) {
+            // Obtiene el centro de fitness desde la base de datos
             FitnessCenter fitnessCenter = fitnessCenterRepository.findById(fitnessCenterId).get();
 
-            if(!fitnessCenter.getCoordinatorEmail().isEmpty()){
+            // Si ya hay un coordinador asignado, cambia su rol a "ROLE_USER"
+            if (!fitnessCenter.getCoordinatorEmail().isEmpty()) {
                 AuthBasicUserDTO authBasicUserDTO = new AuthBasicUserDTO();
                 authBasicUserDTO.setUserName(fitnessCenter.getCoordinatorEmail());
+
+                // Asigna el rol de usuario básico
                 Set<RoleEnum> roles = new HashSet<>();
                 roles.add(RoleEnum.ROLE_USER);
                 authBasicUserDTO.setRoles(roles);
 
+                // Realiza la llamada al microservicio de autenticación para cambiar el rol
                 ResponseEntity<AuthBasicUserDTO> responseChangeCoordinatorToUser = restTemplate.exchange(
                         "http://AUTH-MICROSERVICE/auth/change-role",
                         HttpMethod.POST,
@@ -47,17 +65,20 @@ public class FitnessCenterService {
                         AuthBasicUserDTO.class
                 );
 
+                // Si el cambio de rol falla, devuelve null
                 if (responseChangeCoordinatorToUser.getStatusCode() != HttpStatus.OK) {
                     return null;
                 }
             }
 
+            // Asigna el rol de coordinador al nuevo usuario
             Set<RoleEnum> roles = new HashSet<>();
             roles.add(RoleEnum.ROLE_CAF_COORDINATOR);
             AuthBasicUserDTO authBasicUserDTO = new AuthBasicUserDTO();
             authBasicUserDTO.setRoles(roles);
             authBasicUserDTO.setUserName(userEmail);
 
+            // Realiza la llamada al microservicio de autenticación para asignar el rol de coordinador
             ResponseEntity<AuthBasicUserDTO> responseChangeUserToCoordinator = restTemplate.exchange(
                     "http://AUTH-MICROSERVICE/auth/change-role",
                     HttpMethod.POST,
@@ -65,13 +86,17 @@ public class FitnessCenterService {
                     AuthBasicUserDTO.class
             );
 
-            if (responseChangeUserToCoordinator.getStatusCode() != HttpStatus.OK){
+            // Si el cambio de rol falla, devuelve null
+            if (responseChangeUserToCoordinator.getStatusCode() != HttpStatus.OK) {
                 return null;
             }
 
+            // Actualiza el email del coordinador en el centro de fitness y guarda los cambios
             fitnessCenter.setCoordinatorEmail(userEmail);
             return fitnessCenterRepository.save(fitnessCenter);
         }
+
+        // Devuelve null si el centro de fitness no existe
         return null;
     }
 }

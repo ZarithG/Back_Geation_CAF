@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://autorack.proxy.rlwy.net:11940/CafDB?createDatabaseIfNotExist=true
     username: root
-    password: 'dGHbPPRRHBvWareoMjJvlUGabalVYVZU'
+    password: ${DB_PASSWORD}
   servlet:
     multipart:
       max-file-size: 5MB
@@ -23,8 +23,8 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
-#      defaultZone: https://eureka-microservice-caf-app.onrender.com/eureka/
+      #defaultZone: https://eureka-051n.onrender.com/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 

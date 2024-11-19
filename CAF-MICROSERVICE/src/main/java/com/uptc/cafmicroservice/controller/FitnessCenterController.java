@@ -17,25 +17,45 @@ import java.util.List;
 @Controller
 @RequestMapping("/caf")
 public class FitnessCenterController {
+    // Inyección de la dependencia de FitnessCenterService
     @Autowired
     FitnessCenterService fitnessCenterService;
 
+    /**
+     * Endpoint para obtener todos los centros de fitness.
+     * @return Una ResponseEntity con la lista de FitnessCenterDTO o sin contenido si la lista está vacía.
+     */
     @GetMapping("/all")
     public ResponseEntity<List<FitnessCenterDTO>> getAllFitnessCenter() {
+        // Llama al método del servicio para obtener la lista de centros de fitness
         List<FitnessCenter> fitnessCenterList = fitnessCenterService.getAll();
+
+        // Verifica si la lista está vacía y responde en consecuencia
         if (fitnessCenterList.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build(); // Devuelve un 204 No Content si no hay centros de fitness
         }
-        return ResponseEntity.ok(FitnessCenterMapper.INSTANCE.mapFitnessCenterListToFitnessCenterDTOList
-                (fitnessCenterList));
+
+        // Devuelve un 200 OK con la lista de DTOs mapeada
+        return ResponseEntity.ok(FitnessCenterMapper.INSTANCE.mapFitnessCenterListToFitnessCenterDTOList(fitnessCenterList));
     }
 
+    /**
+     * Endpoint para cambiar el coordinador de un centro de fitness.
+     * @param fitnessCenterDTO El DTO que contiene los datos del centro de fitness y el nuevo email del coordinador.
+     * @return Una ResponseEntity con el FitnessCenterDTO actualizado o sin contenido si no se puede realizar el cambio.
+     */
     @PostMapping("/change-coordinator")
-    public ResponseEntity<FitnessCenterDTO> changeFitnessCenterCoordinator(@RequestBody FitnessCenterDTO fitnessCenterDTO){
+    public ResponseEntity<FitnessCenterDTO> changeFitnessCenterCoordinator(@RequestBody FitnessCenterDTO fitnessCenterDTO) {
+        // Llama al método del servicio para cambiar el coordinador del centro de fitness
         FitnessCenter fitnessCenter = fitnessCenterService.changeFitnessCenterCoordinator(fitnessCenterDTO.getId(), fitnessCenterDTO.getCoordinatorEmail());
+
+        // Verifica si el cambio fue exitoso y responde en consecuencia
         if (fitnessCenter == null) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build(); // Devuelve un 204 No Content si no se pudo realizar el cambio
         }
+
+        // Devuelve un 200 OK con el DTO del centro de fitness actualizado
         return ResponseEntity.ok(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(fitnessCenter));
     }
+
 }

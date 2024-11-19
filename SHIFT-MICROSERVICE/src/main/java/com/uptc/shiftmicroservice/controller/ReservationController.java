@@ -63,4 +63,25 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    //Método para listar las reservaciones agendadas de un usuario
+    @GetMapping("/allReservationForUser/{userid}")
+    public ResponseEntity<List<Reservation>> allReservationForUser(@PathVariable("userid") int userId){
+        List<Reservation> reservations = reservationService.getAllReservationForUser(userId);
+        if(reservations.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reservations);
+    }
+
+    @PostMapping("/cancelReservationForUser/{shiftId}")
+    public ResponseEntity<ReservationDTO> cancelReservationForUser(@PathVariable("shiftId") long shiftId){
+        Reservation reservationDeleted = reservationService.deleteReservation(shiftId);
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setId(reservationDeleted.getId());
+        if(reservationDeleted == null){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reservationDTO);
+    }
+
 }
