@@ -7,9 +7,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://junction.proxy.rlwy.net:26784/ShiftDB?createDatabaseIfNotExist=true
+    url: jdbc:mysql://junction.proxy.rlwy.net:30776/ShiftDB?createDatabaseIfNotExist=true
     username: root
-    password: PzIOmLnynQcfvUROXZBsJnfnsJRolAWG
+    password: VxphMnqEsScbIMWmADovsbSPaMwQLBKe
 
 server:
   port: 9090

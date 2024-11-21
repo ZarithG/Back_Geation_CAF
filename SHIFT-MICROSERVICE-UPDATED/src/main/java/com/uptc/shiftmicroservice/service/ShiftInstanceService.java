@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -199,6 +198,15 @@ public class ShiftInstanceService {
             shiftInstanceRepository.save(instance);
         });
         return actShiftInstance;
+    }
+
+    /**
+     * Método para verificar que si el turno actual es el último del día actual
+     * @param shiftInstanceActual
+     * @return
+     */
+    public boolean isLastShiftInstanceToday(ShiftInstance shiftInstanceActual) {
+        return shiftInstanceRepository.countShiftInstanceByDateAndShiftId(shiftInstanceActual.getId(), shiftInstanceActual.getDate()) == 0;
     }
 
     /**

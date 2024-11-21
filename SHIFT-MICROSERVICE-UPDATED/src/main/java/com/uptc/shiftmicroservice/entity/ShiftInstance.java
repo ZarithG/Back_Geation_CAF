@@ -1,6 +1,5 @@
 package com.uptc.shiftmicroservice.entity;
 
-import com.uptc.shiftmicroservice.entity.Shift;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,10 +9,10 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShiftInstance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,3 +32,4 @@ public class ShiftInstance {
         return this.state;
     }
 }
+

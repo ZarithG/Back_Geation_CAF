@@ -17,16 +17,17 @@ public interface ShiftInstanceRepository extends JpaRepository<ShiftInstance, Lo
     @Query("SELECT s FROM ShiftInstance s WHERE s.state = true ORDER BY s.date DESC")
     Optional<List<ShiftInstance>> findTopByStateTrueOrderByDateDesc();
 
-//    @Query("SELECT s FROM ShiftInstance s JOIN s.dayAssignment d WHERE d.fitnessCenter = :fitnessCenter AND s.date = :date AND s.state = TRUE")
-//    List<ShiftInstance> findShiftInstancesByFitnessCenterAndDate(@Param("fitnessCenter") int fitnessCenter, @Param("date") LocalDate date);
-
-//    @Query("SELECT s FROM ShiftInstance s WHERE s.shift.dayAssignment.fitnessCenter = :fitnessCenter AND s.date = :date AND s.state = TRUE")
-//    List<ShiftInstance> findShiftInstancesByFitnessCenterAndDate(@Param("fitnessCenter") int fitnessCenter, @Param("date") LocalDate date);
-
-    @Query("SELECT s FROM ShiftInstance s WHERE s.date = :date AND s.state = TRUE AND s.shift.id = :shiftId ORDER BY s.date DESC LIMIT 1")
+    @Query("SELECT s FROM ShiftInstance s WHERE s.date = :date AND s.state = TRUE AND s.shift.id = :shiftId ORDER BY s.id DESC LIMIT 1")
     List<ShiftInstance> findShiftInstanceByDateAndShiftId(@Param("date") LocalDate date, @Param("shiftId") int shiftId);
 
-    @Query(value = "SELECT s FROM ShiftInstance s WHERE s.shift.dayAssignment.fitnessCenter = :fitnessCenter AND s.date = :actDate AND Time(:timeAct) BETWEEN s.shift.startTime AND s.shift.endTime")
+    @Query("SELECT s FROM ShiftInstance s WHERE s.shift.dayAssignment.fitnessCenter = :fitnessCenter " +
+            "AND s.date = :actDate AND :timeAct BETWEEN s.shift.startTime AND s.shift.endTime")
     List<ShiftInstance> findActiveShiftsByFitnessCenterAndCurrentTime(
-            @Param("fitnessCenter") int fitnessCenter, @Param("timeAct") LocalTime timeAct, @Param("actDate")LocalDate actDate);
+            @Param("fitnessCenter") int fitnessCenter,
+            @Param("timeAct") LocalTime timeAct,
+            @Param("actDate") LocalDate actDate);
+
+
+    @Query("SELECT count(s) FROM ShiftInstance s WHERE s.shift.id = :shiftId AND s.date = :dateShift")
+    int countShiftInstanceByDateAndShiftId(@Param("shiftId")long shiftId, @Param("dateShift") LocalDate dateShift);
 }

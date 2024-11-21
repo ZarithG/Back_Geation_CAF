@@ -1,6 +1,7 @@
 package com.uptc.shiftmicroservice.controller;
 
 import com.uptc.shiftmicroservice.dto.ReservationDTO;
+import com.uptc.shiftmicroservice.dto.ShiftReservationDTO;
 import com.uptc.shiftmicroservice.entity.*;
 import com.uptc.shiftmicroservice.service.DayAssignmentService;
 import com.uptc.shiftmicroservice.service.ReservationService;
@@ -99,16 +100,14 @@ public class ReservationController {
      * @return ResponseEntity con la lista de reservas asociadas a la instancia de turno.
      */
     @GetMapping("/all-reservations-by-shift-instance/{shiftId}")
-    public ResponseEntity<List<Reservation>> getAllReservationForActualShift(@PathVariable("shiftId") long shiftId) {
+    public ResponseEntity<List<ShiftReservationDTO>> getAllReservationForActualShift(@PathVariable("shiftId") long shiftId) {
         // Obtener todas las reservas para la instancia de turno especificada.
-        List<Reservation> reservations = reservationService.getAllReservationsByActualShiftInstanceId(shiftId);
+        List<ShiftReservationDTO> reservations = reservationService.getAllReservationsByActualShiftInstanceId(shiftId);
 
         // Si no hay reservas, devolver 204 No Content.
         if (reservations.isEmpty()) {
-            
             return ResponseEntity.noContent().build();
         }
-
         // Devolver la lista de reservas.
         return ResponseEntity.ok(reservations);
     }
@@ -120,14 +119,14 @@ public class ReservationController {
      * @return ResponseEntity con la reserva registrada si la instancia de turno está activa, o un código de estado 204 (sin contenido) si la instancia no está activa.
      */
     @PostMapping("/registry-attended-reserve")
-    public ResponseEntity<?> registryReservationUser(@RequestBody ReservationDTO reservationDTO) {
+    public ResponseEntity<Reservation> registryReservationUser(@RequestBody ReservationDTO reservationDTO) {
         Optional<Reservation> reservationRegistry;
 
         // Verificar si la instancia de turno está activa.
         if (shiftInstanceService.isActiveShiftInstance(reservationDTO.getIdShiftInstance())) {
             // Registrar la asistencia de la reserva.
             reservationRegistry = reservationService.registryReservation(reservationDTO.getId());
-            return ResponseEntity.ok(reservationRegistry);
+            return ResponseEntity.ok(reservationRegistry.get());
         }
 
         // Si la instancia no está activa, devolver 204 No Content.
