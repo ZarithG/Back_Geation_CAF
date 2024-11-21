@@ -9,7 +9,6 @@ import com.uptc.cafmicroservice.entity.UserResponse;
 import com.uptc.cafmicroservice.enums.InscriptionStatusEnum;
 import com.uptc.cafmicroservice.mapper.FitnessCenterMapper;
 import com.uptc.cafmicroservice.mapper.InscriptionMapper;
-import com.uptc.cafmicroservice.mapper.PARQQuestionMapper;
 import com.uptc.cafmicroservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -49,20 +48,9 @@ public class InscriptionService {
         FitnessCenter fitnessCenter = fitnessCenterRepository.findByCoordinatorEmail(email);
 
         if (fitnessCenter.getId() != 0) {
-            List<InscriptionDTO> inscriptionDTOList = new ArrayList<>();
             List<Inscription> inscriptionList = inscriptionRepository.findFitnessCenterInscriptions(email);
-
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
-            for (Inscription inscription : inscriptionList) {
-                InscriptionDTO inscriptionDTO = new InscriptionDTO();
-                inscriptionDTO.setId(inscription.getId());
-                inscriptionDTO.setInscriptionDate(inscription.getInscriptionDate());
-                inscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
-                inscriptionDTO.setFitnessCenterDTO(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(inscription.getFitnessCenter()));
-                //inscriptionDTO.setUserResponseDTOList(convertUserResponseToUserResponseDTO(inscription.getUserResponseList()));
-                inscriptionDTOList.add(inscriptionDTO);
-            }
-            return inscriptionDTOList;
+            return convertInscriptionListToInscriptionDTOList(inscriptionList);
         } else {
             return null;
         }
@@ -82,19 +70,10 @@ public class InscriptionService {
         int userId = searchUserByEmail(email); // Busca el ID del usuario por su email
 
         if (userId != 0) {
-            List<InscriptionDTO> inscriptionDTOList = new ArrayList<>();
             List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptions(userId);
 
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
-            for (Inscription inscription : inscriptionList) {
-                InscriptionDTO inscriptionDTO = new InscriptionDTO();
-                inscriptionDTO.setId(inscription.getId());
-                inscriptionDTO.setInscriptionDate(inscription.getInscriptionDate());
-                inscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
-                inscriptionDTO.setFitnessCenterDTO(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(inscription.getFitnessCenter()));
-                inscriptionDTOList.add(inscriptionDTO);
-            }
-            return inscriptionDTOList;
+            return convertInscriptionListToInscriptionDTOList(inscriptionList);
         }
         return null;
     }
@@ -187,4 +166,37 @@ public class InscriptionService {
         responseRepository.saveAll(userResponses); // Guarda todas las respuestas en la base de datos
         return userResponses;
     }
+
+
+    /**
+     * Convierte una lista de objetos Inscription en una lista de objetos InscriptionDTO.
+     *
+     * @param inscriptionList Lista de objetos Inscription a convertir.
+     * @return Lista de objetos InscriptionDTO resultante.
+     */
+    private List<InscriptionDTO> convertInscriptionListToInscriptionDTOList(List<Inscription> inscriptionList) {
+        // Crear una nueva lista para almacenar los objetos InscriptionDTO.
+        List<InscriptionDTO> inscriptionDTOList = new ArrayList<>();
+
+        // Iterar sobre cada objeto Inscription en la lista de entrada.
+        for (Inscription inscription : inscriptionList) {
+            // Crear una nueva instancia de InscriptionDTO.
+            InscriptionDTO inscriptionDTO = new InscriptionDTO();
+
+            // Mapear los atributos del objeto Inscription al objeto InscriptionDTO.
+            inscriptionDTO.setId(inscription.getId()); // Asignar el ID.
+            inscriptionDTO.setInscriptionDate(inscription.getInscriptionDate()); // Asignar la fecha de inscripción.
+            inscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus()); // Asignar el estado de inscripción.
+
+            // Mapear el objeto FitnessCenter relacionado al objeto FitnessCenterDTO usando un mapper.
+            inscriptionDTO.setFitnessCenterDTO(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(inscription.getFitnessCenter()));
+
+            // Agregar el objeto InscriptionDTO a la lista resultante.
+            inscriptionDTOList.add(inscriptionDTO);
+        }
+
+        // Devolver la lista convertida de InscriptionDTOs.
+        return inscriptionDTOList;
+    }
+
 }

@@ -87,6 +87,18 @@ admin-paths:
     - uri: "/auth/user/all"
       method: "GET"
 
+    - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/shift/reserve/shift-instances-caf/"
+      method: "GET"
+
+    - uri: "/shift/reserve/all-reservations-by-shift-instance/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
 wellbeing-director-paths:
   paths:
     - uri: "/user/all"
@@ -113,6 +125,9 @@ wellbeing-director-paths:
     - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
+    - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
     - uri: "/shift/allDayAssignments/{1}[1-9]+[0-9]*"
       method: "GET"
 
@@ -135,6 +150,9 @@ wellbeing-director-paths:
       method: "POST"
 
     - uri: "/auth/user/all"
+      method: "GET"
+
+    - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
       method: "GET"
 
 caf-coordinator-paths:
@@ -173,6 +191,15 @@ caf-coordinator-paths:
       method: "POST"
 
     - uri: "/auth/user/all"
+      method: "GET"
+
+    - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/shift/reserve/all-reservations-by-shift-instance/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
 user-paths:
@@ -222,6 +249,12 @@ user-paths:
     - uri: "/shift/reserve/all-reservations-by-shift-instance/{1}[1-9]+[0-9]*"
       method: "GET"
 
+    - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
 sportsman-paths:
   paths:
     - uri: "/user/{1}[1-9]+[0-9]*"
@@ -250,3 +283,12 @@ sportsman-paths:
 
     - uri: "/shift/reserve/cancelReservationForUser/{1}[1-9]+[0-9]*"
       method: "POST"
+
+    - uri: "/shift/reserve/all-reservations-by-shift-instance/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
