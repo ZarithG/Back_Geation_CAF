@@ -243,7 +243,7 @@ user-paths:
     - uri: "/shift/reserve/allReservationForUser/{1}[1-9]+[0-9]*"
       method: "GET"
 
-    - uri: "/shift/reserve/cancelReservationForUser/{1}[1-9]+[0-9]*"
+    - uri: "/shift/reserve/cancelReservationForUser"
       method: "POST"
 
     - uri: "/shift/reserve/all-reservations-by-shift-instance/{1}[1-9]+[0-9]*"
