@@ -20,10 +20,6 @@ public interface ShiftInstanceRepository extends JpaRepository<ShiftInstance, Lo
     @Query("SELECT s FROM ShiftInstance s JOIN s.dayAssignment d WHERE d.fitnessCenter = :fitnessCenter AND s.date = :date AND s.state = TRUE")
     List<ShiftInstance> findShiftInstancesByFitnessCenterAndDate(@Param("fitnessCenter") int fitnessCenter, @Param("date") LocalDate date);
 
-//    @Query(value = "SELECT s FROM shift_instance s WHERE s.fitness_center = :fitnessCenter AND s.date = CURRENT_DATE AND TIME(CURRENT_TIME) BETWEEN s.start_time AND s.end_time", nativeQuery = true)
-//    List<ShiftInstance> findActiveShiftsByFitnessCenterAndCurrentTime(
-//            @Param("fitnessCenter") int fitnessCenter);
-
     @Query(value = "SELECT * FROM shift_instance s " +
             "WHERE s.fitness_center = :fitnessCenter " +
             "AND s.date = CURRENT_DATE " +

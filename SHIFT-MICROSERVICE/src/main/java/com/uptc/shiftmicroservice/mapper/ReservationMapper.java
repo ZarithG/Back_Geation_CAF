@@ -12,6 +12,4 @@ public interface ReservationMapper {
     ReservationDTO mapReservationToDTO(Reservation reservation);
     Reservation mapReservationDTOToReservation(ReservationDTO reservationDTO);
 
-
-
 }
