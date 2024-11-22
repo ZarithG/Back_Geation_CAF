@@ -54,10 +54,13 @@ public class InscriptionService {
                 if(userAllDataDTO != null){
                     userInscriptionDTO.setInscriptionId(inscription.getId());
                     userInscriptionDTO.setUserAllDataDTO(userAllDataDTO);
+                    userInscriptionDTO.setInscriptionDate(inscription.getInscriptionDate());
+                    userInscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
+                    inscriptionDTOList.add(userInscriptionDTO);
                 }
             }
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
-            return convertInscriptionListToInscriptionDTOList(inscriptionList);
+            return inscriptionDTOList;
         } else {
             return null;
         }

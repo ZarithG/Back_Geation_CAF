@@ -122,18 +122,6 @@ public class InscriptionController {
         return ResponseEntity.ok(inscriptions); // Devuelve un 200 OK con la lista de inscripciones
     }
 
-    @GetMapping("/all-/{email}")
-    public ResponseEntity<List<InscriptionDTO>> getAllUserInscriptions(@PathVariable("email") String email) {
-        // Llama al método del servicio para obtener todas las inscripciones del usuario
-        List<InscriptionDTO> inscriptions = inscriptionService.findAllUserInscriptions(email);
-
-        // Verifica si la lista es nula y responde en consecuencia
-        if (inscriptions == null) {
-            return ResponseEntity.noContent().build(); // Devuelve un 204 No Content si no hay inscripciones
-        }
-        return ResponseEntity.ok(inscriptions); // Devuelve un 200 OK con la lista de inscripciones
-    }
-
     /**
      * Endpoint para obtener todas las inscripciones de un usuario.
      * @param email El email del usuario cuyas inscripciones se van a obtener.
