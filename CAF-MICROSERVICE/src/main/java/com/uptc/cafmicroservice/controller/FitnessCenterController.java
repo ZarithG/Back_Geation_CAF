@@ -55,7 +55,7 @@ public class FitnessCenterController {
         return ResponseEntity.ok(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(fitnessCenter));
     }
 
-    @GetMapping("{coordinatorEmail}")
+    @GetMapping("/{coordinatorEmail}")
     public ResponseEntity<Integer> getFitnessCenterByCoordinatorEmail(@PathVariable String coordinatorEmail) {
         int fitnessCenterId = fitnessCenterService.obtainFitnessCenterIdByCoordinatorEmail(coordinatorEmail);
         if (fitnessCenterId == 0) {
