@@ -62,7 +62,7 @@ public class ShiftInstancesController {
      * @return ResponseEntity con el objeto ShiftInstanceDTO si hay un turno activo,
      * o un código de estado 204 (sin contenido) si no hay turno activo en ese momento.
      */
-    @PostMapping("/actShift/{idCaf}")
+    @GetMapping("/actShift/{idCaf}")
     public ResponseEntity<ShiftInstanceDTO> getActualShiftByCAF(@PathVariable("idCaf") int idFitnessCenter) {
         // Obtener la instancia del turno actual.
         Optional<ShiftInstance> actShift = shiftInstanceService.obtainActShiftInstance(idFitnessCenter);
