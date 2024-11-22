@@ -103,6 +103,9 @@ admin-paths:
     - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
+    - uri: "/caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
 wellbeing-director-paths:
   paths:
     - uri: "/user/all"
@@ -168,6 +171,12 @@ wellbeing-director-paths:
     - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
       method: "GET"
 
+    - uri: "/caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/caf/all"
+      method: "GET"
+
 caf-coordinator-paths:
   paths:
     - uri: "/all-user-data/user-id/{1}[1-9]+[0-9]*"
@@ -222,6 +231,12 @@ caf-coordinator-paths:
       method: "GET"
 
     - uri: "/user/basic/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/caf/all"
       method: "GET"
 
 user-paths:

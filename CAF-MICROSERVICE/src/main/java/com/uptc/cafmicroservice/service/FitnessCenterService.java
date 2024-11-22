@@ -99,4 +99,9 @@ public class FitnessCenterService {
         // Devuelve null si el centro de fitness no existe
         return null;
     }
+
+    public int obtainFitnessCenterIdByCoordinatorEmail(String coordinatorEmail){
+        FitnessCenter fitnessCenter = fitnessCenterRepository.findByCoordinatorEmail(coordinatorEmail);
+        return fitnessCenter.getId();
+    }
 }

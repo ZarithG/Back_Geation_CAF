@@ -7,10 +7,7 @@ import com.uptc.cafmicroservice.service.FitnessCenterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,6 +53,15 @@ public class FitnessCenterController {
 
         // Devuelve un 200 OK con el DTO del centro de fitness actualizado
         return ResponseEntity.ok(FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(fitnessCenter));
+    }
+
+    @GetMapping("{coordinatorEmail}")
+    public ResponseEntity<Integer> getFitnessCenterByCoordinatorEmail(@PathVariable String coordinatorEmail) {
+        int fitnessCenterId = fitnessCenterService.obtainFitnessCenterIdByCoordinatorEmail(coordinatorEmail);
+        if (fitnessCenterId == 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(fitnessCenterId);
     }
 
 }
