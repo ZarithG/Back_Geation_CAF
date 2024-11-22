@@ -1,8 +1,6 @@
 package com.uptc.cafmicroservice.service;
 
-import com.uptc.cafmicroservice.dto.InscriptionDTO;
-import com.uptc.cafmicroservice.dto.UserBasicDTO;
-import com.uptc.cafmicroservice.dto.UserResponseDTO;
+import com.uptc.cafmicroservice.dto.*;
 import com.uptc.cafmicroservice.entity.FitnessCenter;
 import com.uptc.cafmicroservice.entity.Inscription;
 import com.uptc.cafmicroservice.entity.UserResponse;
@@ -44,11 +42,20 @@ public class InscriptionService {
      * @param email Correo electrónico del coordinador actual del CAF
      * @return Lista de objetos InscriptionDTO o null si el centro de fitness no existe.
      */
-    public List<InscriptionDTO> getAllInscriptionByFitnessCenter(String email) {
+    public List<UserInscriptionDTO> getAllInscriptionByFitnessCenter(String email) {
         FitnessCenter fitnessCenter = fitnessCenterRepository.findByCoordinatorEmail(email);
-
+        List<UserInscriptionDTO> inscriptionDTOList = new ArrayList<>();
         if (fitnessCenter.getId() != 0) {
             List<Inscription> inscriptionList = inscriptionRepository.findFitnessCenterInscriptions(email);
+            for (Inscription inscription : inscriptionList) {
+                UserAllDataDTO userAllDataDTO = searchAllUserDataByUserId(inscription.getUserId());
+                UserInscriptionDTO userInscriptionDTO = new UserInscriptionDTO();
+
+                if(userAllDataDTO != null){
+                    userInscriptionDTO.setInscriptionId(inscription.getId());
+                    userInscriptionDTO.setUserAllDataDTO(userAllDataDTO);
+                }
+            }
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
             return convertInscriptionListToInscriptionDTOList(inscriptionList);
         } else {
@@ -66,8 +73,20 @@ public class InscriptionService {
      * @param email Email del usuario.
      * @return Lista de objetos InscriptionDTO o null si el usuario no existe.
      */
-    public List<InscriptionDTO> getAllUserInscriptions(String email) {
+    public List<InscriptionDTO> getAllUserActiveInscriptions(String email) {
         int userId = searchUserByEmail(email); // Busca el ID del usuario por su email
+
+        if (userId != 0) {
+            List<Inscription> inscriptionList = inscriptionRepository.findAllUserActiveInscriptions(userId);
+
+            // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
+            return convertInscriptionListToInscriptionDTOList(inscriptionList);
+        }
+        return null;
+    }
+
+    public List<InscriptionDTO> findAllUserInscriptions(String email){
+        int userId = searchUserByEmail(email);
 
         if (userId != 0) {
             List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptions(userId);
@@ -129,6 +148,21 @@ public class InscriptionService {
             }
         }
         return 0; // Retorna 0 si no se encuentra el usuario
+    }
+
+    private UserAllDataDTO searchAllUserDataByUserId(int userId) {
+        ResponseEntity<UserAllDataDTO> response = restTemplate.exchange(
+                "http://USERS-MICROSERVICE/all-user-data/user-id/" + userId,
+                HttpMethod.GET,
+                new HttpEntity<>(null),
+                UserAllDataDTO.class
+        );
+        if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getBody() != null) {
+                return response.getBody();
+            }
+        }
+        return null;
     }
 
     /**

@@ -9,7 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserBasicDTO {
+public class UserAllDataDTO {
     private int id;
     private String name;
     private String email;
@@ -20,6 +20,17 @@ public class UserBasicDTO {
     private Date birthDate;
     private String phoneNumber;
     private String residenceAddress;
-    private int department;
-    private int city;
+    private String department;
+    private String city;
+
+    private String eps;
+    private String bloodGroup;
+    private String allergies;
+
+    private String contactName;
+    private String contactLastname;
+    private String contactPhone;
+    private String contactEmail;
+    private String contactRelationship;
+    private String contactResidenceAddress;
 }

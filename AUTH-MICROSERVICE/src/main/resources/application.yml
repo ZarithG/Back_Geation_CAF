@@ -37,8 +37,6 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
       #defaultZone: https://eureka-051n.onrender.com/eureka/
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 admin-paths:
   paths:
@@ -46,6 +44,12 @@ admin-paths:
       method: "POST"
 
     - uri: "/user/all"
+      method: "GET"
+
+    - uri: "/all-user-data/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/caf/inscription/all-active/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
     - uri: "/caf/all"
@@ -104,6 +108,15 @@ wellbeing-director-paths:
     - uri: "/user/all"
       method: "GET"
 
+    - uri: "/all-user-data/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/caf/inscription/all-active/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/caf/question/all"
+      method: "GET"
+
     - uri: "/user/departments"
       method: "GET"
 
@@ -157,10 +170,19 @@ wellbeing-director-paths:
 
 caf-coordinator-paths:
   paths:
+    - uri: "/all-user-data/user-id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
     - uri: "/user/{1}[1-9]+[0-9]*"
       method: "GET"
 
     - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/caf/question/all"
+      method: "GET"
+
+    - uri: "/caf/inscription/all-active/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
     - uri: "/shift/reserve/create-shift-instances/{1}[1-9]+[0-9]*"
@@ -220,6 +242,9 @@ user-paths:
       method: "POST"
 
     - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
+    - uri: "/caf/inscription/all-active/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
     - uri: "/user/departments"

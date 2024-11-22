@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface InscriptionRepository extends JpaRepository<Inscription, Integer> {
     Inscription findInscriptionById(int id);
 
-    @Query("SELECT i FROM Inscription i WHERE i.fitnessCenter.coordinatorEmail = :coordinatorEmail")
+    @Query("SELECT i FROM Inscription i WHERE i.fitnessCenter.coordinatorEmail = :coordinatorEmail AND i.inscriptionStatus = 'PENDING'")
     List<Inscription> findFitnessCenterInscriptions(String coordinatorEmail);
 
     @Query("SELECT i FROM Inscription i WHERE i.userId= :userId")

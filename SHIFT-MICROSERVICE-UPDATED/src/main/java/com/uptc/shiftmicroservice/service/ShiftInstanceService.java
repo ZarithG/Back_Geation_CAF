@@ -91,6 +91,12 @@ public class ShiftInstanceService {
         List<ShiftInstance> shiftInstancesList = new ArrayList<>();
         String day = actDate.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase();
         day = removeMarkDowns(day);
+
+        if(day.equals("SABADO")){
+            actDate = LocalDate.now().plusDays(3);
+            day = "LUNES";
+        }
+
         Optional<DayAssignment> dayAssignment = dayAssignmentService.getDayAssignmentByDayAndFinessCenter(Day.valueOf(day), idFitnessCenter);
 
         if (dayAssignment.isPresent()) {
