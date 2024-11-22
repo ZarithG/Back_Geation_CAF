@@ -1,15 +1,25 @@
 package com.uptc.shiftmicroservice.service;
 
 import com.uptc.shiftmicroservice.dto.ReservationDTO;
+import com.uptc.shiftmicroservice.dto.ShiftReservationDTO;
+import com.uptc.shiftmicroservice.dto.UserBasicDTO;
 import com.uptc.shiftmicroservice.entity.Reservation;
+import com.uptc.shiftmicroservice.entity.Shift;
 import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import com.uptc.shiftmicroservice.repository.ReservationRepository;
+import com.uptc.shiftmicroservice.repository.ShiftInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +39,12 @@ public class ReservationService {
     @Autowired
     private ShiftService shiftService;
 
+    @Autowired
+    private ShiftInstanceRepository shiftInstanceRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     /**
      * Realiza una reserva para un usuario en una instancia de turno específica.
      *
@@ -38,32 +54,38 @@ public class ReservationService {
     public Optional<Reservation> reserveShiftForUser(ReservationDTO reservationDTO) {
         Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
         if (shiftInstance.isPresent()) {
-            int totalReserves = countReversesToShiftIntance(shiftInstance.get());
-            // Verificar disponibilidad
-            if ((shiftInstance.get().getPlaceAvailable() - totalReserves) > 0) {
-                List<Reservation> reservations = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
-                // Verificar si el usuario ya tiene una reserva hoy
-                if (reservations.isEmpty()) {
-                    Reservation newReservation = new Reservation();
-                    newReservation.setDateReservation(LocalDateTime.now());
-                    newReservation.setShiftInstance(shiftInstance.get());
-                    newReservation.setUserId(reservationDTO.getUserId());
-                    newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
-                    return Optional.of(reservationRepository.save(newReservation));
+            ShiftInstance actShiftInstance = shiftInstanceService.findShiftInstanceShiftId(shiftInstance.get().getShift().getId());
+            if (actShiftInstance != null){
+                if (actShiftInstance.getPlaceAvailable() > 0) {
+                    List<Reservation> reservations = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
+                    if (reservations.isEmpty()) {
+                        Reservation newReservation = new Reservation();
+                        newReservation.setDateReservation(LocalDateTime.now());
+                        newReservation.setShiftInstance(actShiftInstance);
+                        newReservation.setUserId(reservationDTO.getUserId());
+                        newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
+
+                        ShiftInstance newShiftInstance = new ShiftInstance();
+                        newShiftInstance.setShift(actShiftInstance.getShift());
+                        newShiftInstance.setDate(actShiftInstance.getDate());
+                        newShiftInstance.setPlaceAvailable(actShiftInstance.getPlaceAvailable() - 1);
+
+                        if(newShiftInstance.getPlaceAvailable() == 0){
+                            newShiftInstance.setState(false);
+                        }else{
+                            newShiftInstance.setState(true);
+                        }
+
+                        ShiftInstance saveShiftInstance = shiftInstanceRepository.save(newShiftInstance);
+                        if(saveShiftInstance.getId() != 0){
+                            return Optional.of(reservationRepository.save(newReservation));
+                        }
+                        return Optional.empty();
+                    }
                 }
             }
         }
         return Optional.empty();
-    }
-
-    /**
-     * Cuenta el número de reservas asociadas a una instancia de turno específica.
-     *
-     * @param shiftInstance Instancia de turno.
-     * @return Número total de reservas realizadas.
-     */
-    public int countReversesToShiftIntance(ShiftInstance shiftInstance) {
-        return reservationRepository.countByShiftInstance(shiftInstance);
     }
 
     /**
@@ -96,6 +118,21 @@ public class ReservationService {
         return Optional.empty();
     }
 
+public UserBasicDTO searchUserById(int userId){
+    ResponseEntity<UserBasicDTO> response = restTemplate.exchange(
+            "http://USERS-MICROSERVICE/user/basic/user-id/" + userId,
+            HttpMethod.GET,
+            new HttpEntity<>(null),
+            UserBasicDTO.class
+    );
+    if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getBody() != null) {
+            return response.getBody();
+        }
+    }
+    return null;
+}
+
     /**
      * Registra todas las reservas de un turno como no atendidas si no fueron completadas.
      *
@@ -103,7 +140,7 @@ public class ReservationService {
      * @return `true` si todas las reservas se actualizaron; `false` si no hay reservas.
      */
     public boolean registryAttendedAllReservationShift(long idFinishShiftInstance) {
-        List<Reservation> reservationList = reservationRepository.findByShiftInstance_Id(idFinishShiftInstance);
+        List<Reservation> reservationList = reservationRepository.findAllByShiftInstance_IdAndAttendedStatus(idFinishShiftInstance);
         if (!reservationList.isEmpty()) {
             for (Reservation reservation : reservationList) {
                 if (reservation.getReservationEnum().equals(ReservationEnum.SCHEDULED)) {
@@ -131,8 +168,31 @@ public class ReservationService {
      * @param idReservation ID de la reserva.
      * @return La reserva eliminada, o `null` si no existe.
      */
-    public Reservation deleteReservation(long idReservation) {
-        return reservationRepository.findById(idReservation).orElse(null);
+    public Optional<Reservation> deleteReservation(ReservationDTO reservationDTO) {
+        Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
+        if (shiftInstance.isPresent()) {
+            ShiftInstance actShiftInstance = shiftInstanceService.findShiftInstanceShiftId(shiftInstance.get().getShift().getId());
+
+            if (actShiftInstance != null) {
+                ShiftInstance newShiftInstance = new ShiftInstance();
+                newShiftInstance.setShift(actShiftInstance.getShift());
+                newShiftInstance.setDate(actShiftInstance.getDate());
+                newShiftInstance.setPlaceAvailable(actShiftInstance.getPlaceAvailable() + 1);
+
+                if(!actShiftInstance.getState()){
+                    newShiftInstance.setState(true);
+                }
+
+                ShiftInstance saveShiftInstance = shiftInstanceRepository.save(newShiftInstance);
+
+                if(saveShiftInstance.getId() != 0){
+                    return reservationRepository.findById(reservationDTO.getId());
+                }
+
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -141,8 +201,22 @@ public class ReservationService {
      * @param actualInstanceId ID de la instancia de turno.
      * @return Lista de reservas asociadas.
      */
-    public List<Reservation> getAllReservationsByActualShiftInstanceId(long actualInstanceId) {
-        return reservationRepository.findAllByShiftInstance_Id(actualInstanceId);
+    public List<ShiftReservationDTO> getAllReservationsByActualShiftInstanceId(long actualInstanceId) {
+        List<Reservation> reservations = reservationRepository.findAllByShiftInstance_IdAndAttendedStatus(actualInstanceId);
+        List<ShiftReservationDTO> shiftReservationDTOList = new ArrayList<>();
+        for(Reservation reservation : reservations){
+            UserBasicDTO userBasicDTO = searchUserById(reservation.getUserId());
+            if(userBasicDTO != null){
+                ShiftReservationDTO shiftReservationDTO = new ShiftReservationDTO();
+                shiftReservationDTO.setIdShiftInstance(reservation.getShiftInstance().getId());
+                shiftReservationDTO.setUserBasicDTO(userBasicDTO);
+                shiftReservationDTO.setIdReservation(reservation.getId());
+                shiftReservationDTOList.add(shiftReservationDTO);
+            }else{
+                return new ArrayList<>();
+            }
+        }
+        return shiftReservationDTOList;
     }
 }
 

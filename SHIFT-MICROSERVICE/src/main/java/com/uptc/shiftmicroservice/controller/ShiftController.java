@@ -4,7 +4,6 @@ import com.uptc.shiftmicroservice.dto.DayAssignmentDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Shift;
-import com.uptc.shiftmicroservice.errors.ConflictResponse;
 import com.uptc.shiftmicroservice.mapper.DayAssignmentMapper;
 import com.uptc.shiftmicroservice.mapper.ShiftMapper;
 import com.uptc.shiftmicroservice.service.DayAssignmentService;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

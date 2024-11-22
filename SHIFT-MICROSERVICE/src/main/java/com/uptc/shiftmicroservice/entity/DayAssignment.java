@@ -1,5 +1,6 @@
 package com.uptc.shiftmicroservice.entity;
 
+import com.uptc.shiftmicroservice.entity.Day;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

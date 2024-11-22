@@ -81,7 +81,7 @@ public class InscriptionService {
 
         if (userId != 0) {
             List<Inscription> inscriptionList = inscriptionRepository.findAllUserActiveInscriptions(userId);
-
+            System.out.println(inscriptionList.size());
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
             return convertInscriptionListToInscriptionDTOList(inscriptionList);
         }

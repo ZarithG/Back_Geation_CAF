@@ -8,28 +8,13 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ShiftInstanceMapper {
-
-    /**
-     * Instancia única de `ShiftInstanceMapper`, gestionada por MapStruct.
-     * Esta instancia se utiliza para realizar las operaciones de mapeo.
-     */
     ShiftInstanceMapper INSTANCE = Mappers.getMapper(ShiftInstanceMapper.class);
 
-    /**
-     * Convierte un objeto de tipo `ShiftInstance` a su representación de DTO (`ShiftInstanceDTO`).
-     *
-     * @param shift Objeto `ShiftInstance` que se desea convertir.
-     * @return Objeto `ShiftInstanceDTO` con los datos mapeados desde el `ShiftInstance`.
-     */
-    @Mapping(source = "dayAssignment.id", target = "dayAssignment")
-    ShiftInstanceDTO shiftInstanceToShiftInstanceDTO(ShiftInstance shift);
+    // Mapping from ShiftInstance to ShiftInstanceDTO
+    @Mapping(source = "shift.id", target = "shift")  // Mapear solo el ID del shift
+    ShiftInstanceDTO shiftInstanceToShiftInstanceDTO(ShiftInstance shiftInstance);
 
-    /**
-     * Convierte un objeto de tipo `ShiftInstanceDTO` a su representación de entidad (`ShiftInstance`).
-     *
-     * @param shiftDTO Objeto `ShiftInstanceDTO` que se desea convertir.
-     * @return Objeto `ShiftInstance` con los datos mapeados desde el `ShiftInstanceDTO`.
-     */
-    @Mapping(source = "dayAssignment", target = "dayAssignment.id")
-    ShiftInstance shiftInstanceDTOToShiftInstance(ShiftInstanceDTO shiftDTO);
+    // Mapping from ShiftInstanceDTO to ShiftInstance
+    @Mapping(source = "shift", target = "shift.id")  // Mapear el ID del shift de ShiftInstanceDTO a ShiftInstance
+    ShiftInstance shiftInstanceDTOToShiftInstance(ShiftInstanceDTO shiftInstanceDTO);
 }

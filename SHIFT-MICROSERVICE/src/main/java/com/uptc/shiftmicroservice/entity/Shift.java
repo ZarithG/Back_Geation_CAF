@@ -1,12 +1,11 @@
 package com.uptc.shiftmicroservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.uptc.shiftmicroservice.entity.DayAssignment;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Data
@@ -14,7 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Setter
 @Getter
-public class Shift implements Comparable<Shift>{
+public class Shift implements Comparable<com.uptc.shiftmicroservice.entity.Shift>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +29,10 @@ public class Shift implements Comparable<Shift>{
 
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
-    private int placeAvailable;
+    private int maximumPlaceAvailable;
 
     @Override
-    public int compareTo(Shift other) {
+    public int compareTo(com.uptc.shiftmicroservice.entity.Shift other) {
         return this.startTime.compareTo(other.startTime);
     }
 }

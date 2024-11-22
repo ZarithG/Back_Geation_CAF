@@ -1,4 +1,5 @@
 package com.uptc.shiftmicroservice.mapper;
+
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
 import com.uptc.shiftmicroservice.entity.Shift;
 import org.mapstruct.Mapper;

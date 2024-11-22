@@ -44,6 +44,10 @@ public class ShiftInstancesController {
         // Si se ha encontrado y finalizado el turno, se registran todas las reservas atendidas.
         if (actShiftInstance.isPresent()) {
             reservationService.registryAttendedAllReservationShift(actShiftInstance.get().getId());
+            if(shiftInstanceService.isLastShiftInstanceToday(actShiftInstance.get())){ //Verifica si es el último turno del día
+                //Crea las instancias del turno de mañana
+                shiftInstanceService.createAllInstances(actShiftInstance.get().getShift().getDayAssignment().getFitnessCenter());
+            }
             return ResponseEntity.ok().body("Creado");
         } else {
             // Si no se encuentra el turno, devolver un código 204 (sin contenido).

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -62,22 +61,10 @@ public class ShiftInstanceService {
      */
     public ShiftInstance addShiftInstance(LocalDate actDate, Shift shift, int fitnessCenter) {
         ShiftInstance shiftInstance = new ShiftInstance();
-        shiftInstance.setStartTime(shift.getStartTime());
-        shiftInstance.setEndTime(shift.getEndTime());
+        shiftInstance.setShift(shift);
         shiftInstance.setDate(actDate);
         shiftInstance.setState(true);
-        shiftInstance.setFitnessCenter(fitnessCenter);
-
-        if (shift.getPlaceAvailable() == 0) {
-            throw new IllegalArgumentException("El lugar disponible no puede ser 0.");
-        }
-        shiftInstance.setPlaceAvailable(shift.getPlaceAvailable());
-
-        if (shift.getDayAssignment() == null) {
-            throw new IllegalArgumentException("El DayAssignment asociado no puede ser nulo.");
-        }
-        shiftInstance.setDayAssignment(shift.getDayAssignment());
-
+        shiftInstance.setPlaceAvailable(shift.getMaximumPlaceAvailable());
         return shiftInstanceRepository.save(shiftInstance);
     }
 
@@ -89,11 +76,8 @@ public class ShiftInstanceService {
      */
     public List<ShiftInstance> createAllInstances(int idFitnessCenter) {
         LocalDate actualDay = LocalDate.now();
-        List<ShiftInstance> firstDayShiftInstances = createShiftInstances(actualDay, idFitnessCenter);
         LocalDate tomorrowDay = actualDay.plusDays(1);
-        List<ShiftInstance> secondDayShiftInstances = createShiftInstances(tomorrowDay, idFitnessCenter);
-        firstDayShiftInstances.addAll(secondDayShiftInstances);
-        return firstDayShiftInstances;
+        return createShiftInstances(tomorrowDay, idFitnessCenter);
     }
 
     /**
@@ -107,14 +91,18 @@ public class ShiftInstanceService {
         List<ShiftInstance> shiftInstancesList = new ArrayList<>();
         String day = actDate.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase();
         day = removeMarkDowns(day);
+
+        if(day.equals("SABADO")){
+            actDate = LocalDate.now().plusDays(3);
+            day = "LUNES";
+        }
+
         Optional<DayAssignment> dayAssignment = dayAssignmentService.getDayAssignmentByDayAndFinessCenter(Day.valueOf(day), idFitnessCenter);
 
         if (dayAssignment.isPresent()) {
             List<ShiftDTO> shifts = shiftService.getShiftsByDayAssignment(dayAssignment.get().getId());
             for (ShiftDTO shift : shifts) {
-                if (shift.getStartTime().isAfter(LocalDateTime.now().toLocalTime())) {
-                    shiftInstancesList.add(addShiftInstance(actDate, ShiftMapper.INSTANCE.shiftDTOToShift(shift), dayAssignment.get().getFitnessCenter()));
-                }
+                shiftInstancesList.add(addShiftInstance(actDate, ShiftMapper.INSTANCE.shiftDTOToShift(shift), dayAssignment.get().getFitnessCenter()));
             }
         }
         return shiftInstancesList;
@@ -152,14 +140,33 @@ public class ShiftInstanceService {
      * @return Lista de instancias de turnos encontradas.
      */
     private List<ShiftInstance> findShiftInstancesByCaf(LocalDate actDate, int idFitnessCenter) {
-        List<ShiftInstance> shiftInstanceList = shiftInstanceRepository.findShiftInstancesByFitnessCenterAndDate(idFitnessCenter, actDate);
-        List<ShiftInstance> shiftInstancesAvailable = new ArrayList<>();
-        for (ShiftInstance shift : shiftInstanceList) {
-            if (hasPlaceAvailable(actDate, shift) > 0 && isActiveShiftInstance(shift.getId())) {
-                shiftInstancesAvailable.add(shift);
+        String day = actDate.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase();
+        day = removeMarkDowns(day);
+        Optional<DayAssignment> dayAssignment = dayAssignmentService.getDayAssignmentByDayAndFinessCenter(Day.valueOf(day), idFitnessCenter);
+
+        if(dayAssignment.isPresent()){
+            List<ShiftDTO> shiftDTOList = shiftService.getShiftsByDayAssignment(dayAssignment.get().getId());
+            List<ShiftInstance> shiftInstancesAvailable = new ArrayList<>();
+            for (ShiftDTO shiftDTO : shiftDTOList) {
+                List<ShiftInstance> shiftInstances = shiftInstanceRepository.findShiftInstanceByDateAndShiftId(actDate, shiftDTO.getId());
+                if(!shiftInstances.isEmpty()){
+                    ShiftInstance actShiftInstance = shiftInstances.get(0);
+                    if(actShiftInstance.getPlaceAvailable() > 0){
+                        shiftInstancesAvailable.add(actShiftInstance);
+                    }
+                }
             }
+            return shiftInstancesAvailable;
         }
-        return shiftInstancesAvailable;
+        return new ArrayList<>();
+    }
+
+    public ShiftInstance findShiftInstanceShiftId(int shiftId){
+        List<ShiftInstance> actShiftInstance = shiftInstanceRepository.findShiftInstanceByDateAndShiftId(LocalDate.now(), shiftId);
+        if(actShiftInstance.isEmpty()){
+            return null;
+        }
+        return actShiftInstance.get(0);
     }
 
     /**
@@ -181,7 +188,7 @@ public class ShiftInstanceService {
      */
     public boolean isActiveShiftInstance(long idShiftInstance) {
         ShiftInstance actShiftInstance = findShiftInstanceById(idShiftInstance).orElseThrow();
-        return LocalTime.now().isBefore(actShiftInstance.getEndTime()) && actShiftInstance.getState();
+        return LocalTime.now().isBefore(actShiftInstance.getShift().getEndTime()) && actShiftInstance.getState();
     }
 
     /**
@@ -200,18 +207,26 @@ public class ShiftInstanceService {
     }
 
     /**
+     * Método para verificar que si el turno actual es el último del día actual
+     * @param shiftInstanceActual
+     * @return
+     */
+    public boolean isLastShiftInstanceToday(ShiftInstance shiftInstanceActual) {
+        return shiftInstanceRepository.countShiftInstanceByDateAndShiftId(shiftInstanceActual.getId(), shiftInstanceActual.getDate()) == 0;
+    }
+
+    /**
      *
      * Método para obtenr la instancia del turno actual en un CAF
      * @param fitnessCenter
      * @return  Optional con la instancia actual ShiftInstance, o vacío si no existe.
      */
     public Optional<ShiftInstance> obtainActShiftInstance(int fitnessCenter){
-        List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter, LocalTime.now());
-        if(shiftInstances.size() > 0){
+        List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter, LocalTime.now(), LocalDate.now());
+        if(!shiftInstances.isEmpty()){
             return Optional.of(shiftInstances.get(0));
         }
         return Optional.empty();
-
     }
 }
 

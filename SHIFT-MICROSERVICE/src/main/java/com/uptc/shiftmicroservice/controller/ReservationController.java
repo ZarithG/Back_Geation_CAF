@@ -1,6 +1,7 @@
 package com.uptc.shiftmicroservice.controller;
 
 import com.uptc.shiftmicroservice.dto.ReservationDTO;
+import com.uptc.shiftmicroservice.dto.ShiftReservationDTO;
 import com.uptc.shiftmicroservice.entity.*;
 import com.uptc.shiftmicroservice.service.DayAssignmentService;
 import com.uptc.shiftmicroservice.service.ReservationService;
@@ -99,15 +100,14 @@ public class ReservationController {
      * @return ResponseEntity con la lista de reservas asociadas a la instancia de turno.
      */
     @GetMapping("/all-reservations-by-shift-instance/{shiftId}")
-    public ResponseEntity<List<Reservation>> getAllReservationForActualShift(@PathVariable("shiftId") long shiftId) {
+    public ResponseEntity<List<ShiftReservationDTO>> getAllReservationForActualShift(@PathVariable("shiftId") long shiftId) {
         // Obtener todas las reservas para la instancia de turno especificada.
-        List<Reservation> reservations = reservationService.getAllReservationsByActualShiftInstanceId(shiftId);
+        List<ShiftReservationDTO> reservations = reservationService.getAllReservationsByActualShiftInstanceId(shiftId);
 
         // Si no hay reservas, devolver 204 No Content.
         if (reservations.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-
         // Devolver la lista de reservas.
         return ResponseEntity.ok(reservations);
     }
@@ -119,14 +119,14 @@ public class ReservationController {
      * @return ResponseEntity con la reserva registrada si la instancia de turno está activa, o un código de estado 204 (sin contenido) si la instancia no está activa.
      */
     @PostMapping("/registry-attended-reserve")
-    public ResponseEntity<?> registryReservationUser(@RequestBody ReservationDTO reservationDTO) {
+    public ResponseEntity<Reservation> registryReservationUser(@RequestBody ReservationDTO reservationDTO) {
         Optional<Reservation> reservationRegistry;
 
         // Verificar si la instancia de turno está activa.
         if (shiftInstanceService.isActiveShiftInstance(reservationDTO.getIdShiftInstance())) {
             // Registrar la asistencia de la reserva.
             reservationRegistry = reservationService.registryReservation(reservationDTO.getId());
-            return ResponseEntity.ok(reservationRegistry);
+            return ResponseEntity.ok(reservationRegistry.get());
         }
 
         // Si la instancia no está activa, devolver 204 No Content.
@@ -154,20 +154,17 @@ public class ReservationController {
     }
 
     /**
-     * Endpoint para cancelar una reserva de turno para un usuario.
-     *
-     * @param shiftId El ID del turno cuya reserva se desea cancelar.
-     * @return ResponseEntity con el DTO de la reserva cancelada.
+     * Endpoint para cancelar una reservación de un turno por un usuario.
+     * @param reservationDTO El DTO con los datos de la reserva que se desea cancelar.
+     * @return ResponseEntity con la reserva cancelada si la instancia de turno está activa, o un código de estado 204 (sin contenido) si no se pudo cancelar correctamente este
      */
-    @PostMapping("/cancelReservationForUser/{shiftId}")
-    public ResponseEntity<ReservationDTO> cancelReservationForUser(@PathVariable("shiftId") long shiftId) {
+    @PostMapping("/cancelReservationForUser")
+    public ResponseEntity<ReservationDTO> cancelReservationForUser(@RequestBody ReservationDTO reservationDTO) {
         // Eliminar la reserva para el turno especificado.
-        Reservation reservationDeleted = reservationService.deleteReservation(shiftId);
-        ReservationDTO reservationDTO = new ReservationDTO();
+        Optional<Reservation> reservationDeleted = reservationService.deleteReservation(reservationDTO);
 
         // Si la reserva se eliminó correctamente, devolver el DTO de la reserva.
-        if (reservationDeleted != null) {
-            reservationDTO.setId(reservationDeleted.getId());
+        if (reservationDeleted.isPresent()) {
             return ResponseEntity.ok(reservationDTO);
         }
 

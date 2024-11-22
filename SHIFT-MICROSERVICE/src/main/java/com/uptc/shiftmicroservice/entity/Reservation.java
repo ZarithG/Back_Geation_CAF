@@ -1,5 +1,6 @@
 package com.uptc.shiftmicroservice.entity;
 
+import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
