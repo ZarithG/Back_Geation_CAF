@@ -175,9 +175,9 @@ public class ShiftService {
      */
     public List<ShiftsReportDTO> shiftsReportAttendedByCAF(ConsultShiftReportDTO consultShiftReportDTO){
         List<ShiftsReportDTO> shiftReportDTOs = new ArrayList<>();
-        LocalDate start = LocalDate.parse(consultShiftReportDTO.getStartDate());
         List<Object[]> consultReportShifts = shiftRepository.getShiftDetailsWithReservationCounts(
                 consultShiftReportDTO.getFitnessCenter(), consultShiftReportDTO.getDay(), consultShiftReportDTO.getStartDate(), consultShiftReportDTO.getEndDate());
+
         for (Object[] row : consultReportShifts) {
             ShiftsReportDTO auxShiftReportDTO = new ShiftsReportDTO();
             auxShiftReportDTO.setDayName(row[4].toString());
