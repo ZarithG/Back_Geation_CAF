@@ -55,7 +55,13 @@ admin-paths:
     - uri: "/caf/inscription/all/coordinator-email/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
+    - uri: "/caf/inscription/user-caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
     - uri: "/caf/all"
+      method: "GET"
+
+    - uri: "/caf/id/{1}[1-9]+[0-9]*"
       method: "GET"
 
     - uri: "/caf/question/all"
@@ -123,7 +129,13 @@ wellbeing-director-paths:
     - uri: "/caf/inscription/all-active/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
+    - uri: "/caf/inscription/user-caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
     - uri: "/caf/question/all"
+      method: "GET"
+
+    - uri: "/caf/id/{1}[1-9]+[0-9]*"
       method: "GET"
 
     - uri: "/user/departments"
@@ -200,7 +212,13 @@ caf-coordinator-paths:
     - uri: "/caf/inscription/all/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
+    - uri: "/caf/inscription/user-caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
     - uri: "/caf/question/all"
+      method: "GET"
+
+    - uri: "/caf/id/{1}[1-9]+[0-9]*"
       method: "GET"
 
     - uri: "/caf/inscription/all-active/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
@@ -265,6 +283,12 @@ user-paths:
     - uri: "/caf/all"
       method: "GET"
 
+    - uri: "/caf/id/{1}[1-9]+[0-9]*"
+      method: "GET"
+
+    - uri: "/caf/inscription/user-caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
     - uri: "/caf/inscription/inscribe-user/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "POST"
 
@@ -315,11 +339,17 @@ sportsman-paths:
     - uri: "/user/{1}[1-9]+[0-9]*"
       method: "GET"
 
+    - uri: "/caf/inscription/user-caf/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
+      method: "GET"
+
     - uri: "/caf/question/all"
       method: "GET"
 
     - uri: "/user/save"
       method: "POST"
+
+    - uri: "/caf/id/{1}[1-9]+[0-9]*"
+      method: "GET"
 
     - uri: "/user/departments"
       method: "GET"

@@ -37,6 +37,20 @@ public class FitnessCenterController {
     }
 
     /**
+     * Endpoint para obtener un fitness center por su id
+     * @param fitnessCenterId Id del fitness center
+     * @return  Una ResponseEntity con el FitnessCenterDTO o sin contenido si no existe el FitnessCenter
+     */
+    @GetMapping("/id/{fitnessCenterId}")
+    public ResponseEntity<FitnessCenterDTO> getFitnessCenterById(@PathVariable("fitnessCenterId") int fitnessCenterId) {
+        FitnessCenterDTO fitnessCenterDTO = fitnessCenterService.obtainFitnessCenterById(fitnessCenterId);
+        if(fitnessCenterDTO == null){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(fitnessCenterDTO);
+    }
+
+    /**
      * Endpoint para cambiar el coordinador de un centro de fitness.
      * @param fitnessCenterDTO El DTO que contiene los datos del centro de fitness y el nuevo email del coordinador.
      * @return Una ResponseEntity con el FitnessCenterDTO actualizado o sin contenido si no se puede realizar el cambio.

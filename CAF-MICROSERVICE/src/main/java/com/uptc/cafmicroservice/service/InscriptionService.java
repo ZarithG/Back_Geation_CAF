@@ -100,6 +100,7 @@ public class InscriptionService {
         return inscriptionRepository.findById(id).orElse(null);
     }
 
+
     /**
      * Obtiene todas las inscripciones asociadas a un usuario específico basado en su email.
      *
@@ -111,7 +112,24 @@ public class InscriptionService {
 
         if (userId != 0) {
             List<Inscription> inscriptionList = inscriptionRepository.findAllUserActiveInscriptions(userId);
-            System.out.println(inscriptionList.size());
+            // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
+            return convertInscriptionListToInscriptionDTOList(inscriptionList);
+        }
+        return null;
+    }
+
+    /**
+     * Obtiene todas las inscripciones de un usuario a un CAF específico que sean activas (ACCEPTED), inactivas (INACTIVE) o pendientes (PENDING)
+     *
+     * @param email Email del usuario.
+     * @param fitnessCenterId Id del CAF
+     * @return Lista de objetos InscriptionDTO o null si el usuario no existe.
+     */
+    public List<InscriptionDTO> getAllUserInscriptionsToCAF(String email, int fitnessCenterId) {
+        int userId = searchUserByEmail(email); // Busca el ID del usuario por su email
+
+        if (userId != 0) {
+            List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptionsToCaf(userId, fitnessCenterId);
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
             return convertInscriptionListToInscriptionDTOList(inscriptionList);
         }

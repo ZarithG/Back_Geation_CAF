@@ -1,9 +1,11 @@
 package com.uptc.cafmicroservice.service;
 
 import com.uptc.cafmicroservice.dto.AuthBasicUserDTO;
+import com.uptc.cafmicroservice.dto.FitnessCenterDTO;
 import com.uptc.cafmicroservice.dto.UserBasicDTO;
 import com.uptc.cafmicroservice.entity.FitnessCenter;
 import com.uptc.cafmicroservice.enums.RoleEnum;
+import com.uptc.cafmicroservice.mapper.FitnessCenterMapper;
 import com.uptc.cafmicroservice.repository.FitnessCenterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -33,6 +35,21 @@ public class FitnessCenterService {
      */
     public List<FitnessCenter> getAll() {
         return fitnessCenterRepository.findAll(); // Devuelve la lista completa de centros de fitness
+    }
+
+    /**
+     * Obtener un FitnessCenter por su id
+     * @param fitnessCenterId Id del fitness center
+     * @return DTO con la información del FitnessCenter
+     */
+    public FitnessCenterDTO obtainFitnessCenterById(int fitnessCenterId){
+        if (fitnessCenterRepository.existsById(fitnessCenterId)) {
+            // Obtiene el centro de fitness desde la base de datos
+            FitnessCenter fitnessCenter = fitnessCenterRepository.findById(fitnessCenterId).get();
+            return FitnessCenterMapper.INSTANCE.mapFitnessCenterToFitnessCenterDTO(fitnessCenter);
+        }else{
+            return null;
+        }
     }
 
     /**

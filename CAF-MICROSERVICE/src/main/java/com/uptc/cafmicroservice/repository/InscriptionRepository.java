@@ -21,4 +21,7 @@ public interface InscriptionRepository extends JpaRepository<Inscription, Intege
 
     @Query("SELECT i FROM Inscription i WHERE i.userId= :userId AND i.inscriptionStatus = 'ACCEPTED'")
     List<Inscription> findAllUserActiveInscriptions(int userId);
+
+    @Query("SELECT i FROM Inscription i WHERE i.userId= :userId AND i.fitnessCenter.id= :fitnessCenterId AND i.inscriptionStatus = 'ACCEPTED' OR i.inscriptionStatus = 'INACTIVE' OR i.inscriptionStatus = 'PENDING'")
+    List<Inscription> findAllUserInscriptionsToCaf(int userId, int fitnessCenterId);
 }
