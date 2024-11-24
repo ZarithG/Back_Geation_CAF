@@ -70,6 +70,7 @@ public class AuthUserController {
      */
     @GetMapping("/user/all")
     public ResponseEntity<List<AuthUserCompleteDTO>> getAllUser() {
+        System.out.println("getAllUser");
         List<AuthUserCompleteDTO> authUserCompleteDTOList = authUserService.getAllUser();
         if (authUserCompleteDTOList.isEmpty()) {
             return ResponseEntity.noContent().build();
