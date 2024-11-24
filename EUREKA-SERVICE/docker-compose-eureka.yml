@@ -1,0 +1,13 @@
+# docker-compose-eureka.yml
+version: '3.8'
+services:
+  keycloak:
+    image: eureka_microservice
+    container_name: eureka_microservice
+    ports:
+      - "8761:8761"
+    networks:
+      - caf_network
+networks:
+  caf_network:
+    external: true

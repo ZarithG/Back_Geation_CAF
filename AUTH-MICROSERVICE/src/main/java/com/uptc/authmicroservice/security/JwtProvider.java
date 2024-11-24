@@ -19,10 +19,16 @@ import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Componente para la gestión de tokens JWT, proporcionando funcionalidades
+ * para la creación, validación y extracción de información de los tokens.
+ */
 @Component
 public class JwtProvider {
 
-
+    /**
+     * Clave secreta utilizada para firmar los tokens.
+     */
     @Value("${jwt.secret}")
     private String secret;
 
@@ -41,30 +47,50 @@ public class JwtProvider {
     @Autowired
     private SportsmanRouteValidator sportsmanRouteValidator;
 
-    public String createToken(AuthUser user){
+    /**
+     * Crea un token JWT para un usuario autenticado.
+     *
+     * @param user Usuario autenticado.
+     * @return Token JWT firmado y en formato compactado.
+     */
+    public String createToken(AuthUser user) {
         Date issuedAt = new Date(System.currentTimeMillis());
-        Date expirationDate = new Date(new Date().getTime() + 3600000);
+        Date expirationDate = new Date(new Date().getTime() + 3600000); // Validez de 1 hora.
 
         return Jwts.builder()
-                .header().type("JWT")
+                .header().type("JWT") // Define el tipo de token como JWT.
                 .and()
-                .subject(user.getUserName())
-                .claim("Authorities", user.getRoles())
-                .issuedAt(issuedAt)
-                .expiration(expirationDate)
-                .signWith(generateSigningKey())
+                .subject(user.getUserName()) // Incluye el nombre de usuario como sujeto.
+                .claim("Authorities", user.getRoles()) // Añade los roles del usuario como un claim.
+                .issuedAt(issuedAt) // Fecha de emisión del token.
+                .expiration(expirationDate) // Fecha de expiración del token.
+                .signWith(generateSigningKey()) // Firma el token con la clave secreta.
                 .compact();
     }
 
+    /**
+     * Genera la clave secreta para firmar los tokens.
+     *
+     * @return Clave secreta como un objeto SecretKey.
+     */
     private SecretKey generateSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 
+    /**
+     * Inicializa la clave secreta codificándola en Base64.
+     */
     @PostConstruct
-    protected void init(){
+    protected void init() {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
+    /**
+     * Extrae los claims de un token JWT.
+     *
+     * @param jwtToken Token JWT a analizar.
+     * @return Claims extraídos del token.
+     */
     public Claims extractClaims(String jwtToken) {
         return Jwts.parser()
                 .verifyWith(generateSigningKey())
@@ -73,103 +99,125 @@ public class JwtProvider {
                 .getPayload();
     }
 
+    /**
+     * Valida un token verificando su expiración y asociación con una ruta específica.
+     *
+     * @param token      Token a validar.
+     * @param requestDTO Información de la solicitud para validar rutas.
+     * @return true si el token es válido y está asociado a la ruta, false en caso contrario.
+     */
     public boolean validate(String token, RequestDTO requestDTO) {
         try {
-            if(!new Date().before(extractExpiration(token))) {
+            if (!new Date().before(extractExpiration(token))) { // Verifica que el token no haya expirado.
                 return false;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
 
+        // Obtiene los validadores de ruta asociados con la solicitud.
         ArrayList<Integer> pathValidatorNumbers = obtainRouteValidatorFromPath(requestDTO);
-        boolean isRoleAssociatedWithpath = false;
-        for (int i = 0; i < pathValidatorNumbers.size(); i++){
-            if(verifyRoleInRouteValidator(token, pathValidatorNumbers.get(i))){
-                isRoleAssociatedWithpath = true;
+        boolean isRoleAssociatedWithPath = false;
+
+        // Verifica si algún rol del usuario está asociado a las rutas validadas.
+        for (int i = 0; i < pathValidatorNumbers.size(); i++) {
+            if (verifyRoleInRouteValidator(token, pathValidatorNumbers.get(i))) {
+                isRoleAssociatedWithPath = true;
                 break;
             }
         }
 
-        return isRoleAssociatedWithpath;
+        return isRoleAssociatedWithPath;
     }
 
-    private ArrayList<Integer> obtainRouteValidatorFromPath(RequestDTO requestDTO){
+    /**
+     * Determina los validadores de ruta aplicables a la solicitud.
+     *
+     * @param requestDTO Información de la solicitud.
+     * @return Lista de identificadores de validadores aplicables.
+     */
+    private ArrayList<Integer> obtainRouteValidatorFromPath(RequestDTO requestDTO) {
         ArrayList<Integer> routeValidators = new ArrayList<>();
         if (adminRouteValidator.isAdminPath(requestDTO)) {
             routeValidators.add(0);
         }
-
         if (userRouteValidator.isUserPath(requestDTO)) {
             routeValidators.add(1);
         }
-
         if (wellbeingDirectorRouteValidator.isWellbeingDirectorPath(requestDTO)) {
             routeValidators.add(2);
         }
-
         if (cafCoordinatorRouteValidator.isCafCoordinatorPath(requestDTO)) {
             routeValidators.add(3);
         }
-
         if (sportsmanRouteValidator.isSportsmanPaths(requestDTO)) {
             routeValidators.add(4);
-        }else{
+        } else {
             routeValidators.add(5);
         }
-
         return routeValidators;
     }
 
-    private boolean verifyRoleInRouteValidator(String token, int pathValidatorNumber){
-        switch (pathValidatorNumber){
+    /**
+     * Verifica si un rol está asociado a un validador de ruta específico.
+     *
+     * @param token               Token del usuario.
+     * @param pathValidatorNumber Identificador del validador de ruta.
+     * @return true si el rol está asociado, false en caso contrario.
+     */
+    private boolean verifyRoleInRouteValidator(String token, int pathValidatorNumber) {
+        switch (pathValidatorNumber) {
             case 0:
-                if(!isUserWithRole(token, RoleEnum.ROLE_ADMIN)){
-                    return false;
-                }
-                return true;
+                return isUserWithRole(token, RoleEnum.ROLE_ADMIN);
             case 1:
-                if(!isUserWithRole(token, RoleEnum.ROLE_USER)) {
-                    return false;
-                }
-                return true;
+                return isUserWithRole(token, RoleEnum.ROLE_USER);
             case 2:
-                if(!isUserWithRole(token, RoleEnum.ROLE_WELLBEING_DIRECTOR)) {
-                    return false;
-                }
-                return true;
+                return isUserWithRole(token, RoleEnum.ROLE_WELLBEING_DIRECTOR);
             case 3:
-                if(!isUserWithRole(token, RoleEnum.ROLE_CAF_COORDINATOR)) {
-                    return false;
-                }
-                return true;
+                return isUserWithRole(token, RoleEnum.ROLE_CAF_COORDINATOR);
             case 4:
-                if(!isUserWithRole(token, RoleEnum.ROLE_SPORTSMAN)) {
-                    return false;
-                }
-                return true;
+                return isUserWithRole(token, RoleEnum.ROLE_SPORTSMAN);
             default:
                 return false;
         }
     }
 
-    private boolean isUserWithRole(String token, RoleEnum roleToValidate){
+    /**
+     * Verifica si el usuario tiene un rol específico.
+     *
+     * @param token          Token del usuario.
+     * @param roleToValidate Rol a validar.
+     * @return true si el usuario tiene el rol, false en caso contrario.
+     */
+    private boolean isUserWithRole(String token, RoleEnum roleToValidate) {
         Set<Role> roles = getAuthoritiesFromToken(token);
-        for(Role role : roles){
+        for (Role role : roles) {
             if (role.getRoleName().equals(roleToValidate))
                 return true;
         }
         return false;
     }
 
-    public String getUserNameFromToken(String token){
+    /**
+     * Obtiene el nombre de usuario desde un token JWT.
+     *
+     * @param token Token JWT.
+     * @return Nombre de usuario o "bad token" si el token es inválido.
+     */
+    public String getUserNameFromToken(String token) {
         try {
             return extractClaims(token).getSubject();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return "bad token";
         }
     }
 
+    /**
+     * Obtiene los roles del usuario desde un token JWT.
+     *
+     * @param token Token JWT.
+     * @return Conjunto de roles asociados al usuario.
+     */
     public Set<Role> getAuthoritiesFromToken(String token) {
         try {
             Claims claims = extractClaims(token);
@@ -186,7 +234,14 @@ public class JwtProvider {
         }
     }
 
+    /**
+     * Extrae la fecha de expiración de un token JWT.
+     *
+     * @param jwtToken Token JWT.
+     * @return Fecha de expiración del token.
+     */
     public Date extractExpiration(String jwtToken) {
         return extractClaims(jwtToken).getExpiration();
     }
 }
+

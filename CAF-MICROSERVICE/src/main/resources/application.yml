@@ -16,17 +16,13 @@ spring:
       max-request-size: 10MB
 
 server:
-  port: ${PORT:${SERVER_PORT:0}}
+  port: 9094
 
 eureka:
   client:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      #defaultZone: https://eureka-051n.onrender.com/eureka/
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-
+      defaultZone: http://172.26.4.191:8761/eureka/
 media:
   location: mediafiles

@@ -1,7 +1,6 @@
 package com.uptc.usersmicroservice.controller;
 
 import com.uptc.usersmicroservice.dto.DepartmentDTO;
-import com.uptc.usersmicroservice.entity.Department;
 import com.uptc.usersmicroservice.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

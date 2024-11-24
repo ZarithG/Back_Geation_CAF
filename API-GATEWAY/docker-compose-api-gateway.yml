@@ -1,0 +1,13 @@
+# docker-compose-eureka.yml
+version: '3.8'
+services:
+  api-gateway:
+    image: api_gateway_microservice
+    container_name: api_gateway_microservice
+    ports:
+      - "9093:9093"
+    networks:
+      - caf_network
+networks:
+  caf_network:
+    external: true

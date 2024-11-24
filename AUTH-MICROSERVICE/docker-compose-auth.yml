@@ -1,0 +1,16 @@
+# docker-compose-eureka.yml
+version: '3.8'
+services:
+  keycloak:
+    image: auth_microservice
+    container_name: auth_microservice
+    expose:
+      - "9091"
+    environment:
+      - CLIENT-ID=${CLIENT-ID}
+      - CLIENT-SECRET=${CLIENT-SECRET}
+    networks:
+      - caf_network
+networks:
+  caf_network:
+    external: true
