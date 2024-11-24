@@ -1,6 +1,8 @@
 package com.uptc.shiftmicroservice.service;
 
+import com.uptc.shiftmicroservice.dto.ConsultShiftReportDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
+import com.uptc.shiftmicroservice.dto.ShiftsReportDTO;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Shift;
 import com.uptc.shiftmicroservice.mapper.ShiftMapper;
@@ -9,6 +11,9 @@ import com.uptc.shiftmicroservice.repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,5 +166,33 @@ public class ShiftService {
 
     public Boolean deleteShift(int dayAssignment, ShiftDTO shiftToDelete){
         return (shiftRepository.deleteByIdAndDayAssignmentId(shiftToDelete.getId(),dayAssignment)) > 0;
+    }
+
+    /**
+     * Método para los reportes sobre la asistencia a los trunos de un caf
+     * @param consultShiftReportDTO
+     * @return
+     */
+    public List<ShiftsReportDTO> shiftsReportAttendedByCAF(ConsultShiftReportDTO consultShiftReportDTO){
+        List<ShiftsReportDTO> shiftReportDTOs = new ArrayList<>();
+        LocalDate start = LocalDate.parse(consultShiftReportDTO.getStartDate());
+        List<Object[]> consultReportShifts = shiftRepository.getShiftDetailsWithReservationCounts(
+                consultShiftReportDTO.getFitnessCenter(), consultShiftReportDTO.getDay(), consultShiftReportDTO.getStartDate(), consultShiftReportDTO.getEndDate());
+        for (Object[] row : consultReportShifts) {
+            ShiftsReportDTO auxShiftReportDTO = new ShiftsReportDTO();
+            auxShiftReportDTO.setDayName(row[4].toString());
+            Time startTimeSql = (Time) row[1];
+            Time endTimeSql = (Time) row[2];
+            LocalTime startTime = startTimeSql != null ? startTimeSql.toLocalTime() : null;
+            LocalTime endTime = endTimeSql != null ? endTimeSql.toLocalTime() : null;
+            auxShiftReportDTO.setStartTime(startTime) ;
+            auxShiftReportDTO.setEndTime(endTime);
+            auxShiftReportDTO.setPlaceAvailable((int)row[3]);
+            auxShiftReportDTO.setAttended((long)row[5]);
+            auxShiftReportDTO.setNoAttended((long)row[6]);
+            auxShiftReportDTO.setTotal((long)row[5] + (long)row[6]);
+            shiftReportDTOs.add(auxShiftReportDTO);
+        }
+        return shiftReportDTOs;
     }
 }

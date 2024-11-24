@@ -1,7 +1,9 @@
 package com.uptc.shiftmicroservice.controller;
 
+import com.uptc.shiftmicroservice.dto.ConsultShiftReportDTO;
 import com.uptc.shiftmicroservice.dto.DayAssignmentDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
+import com.uptc.shiftmicroservice.dto.ShiftsReportDTO;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
 import com.uptc.shiftmicroservice.entity.Shift;
 import com.uptc.shiftmicroservice.mapper.DayAssignmentMapper;
@@ -131,5 +133,21 @@ public class ShiftController {
 
         // Si no se encuentra el turno, devolver un error 404.
         return ResponseEntity.notFound().build();
+    }
+
+
+    @PostMapping("/shiftsReportAttended")
+    public ResponseEntity<List<ShiftsReportDTO>> getShiftReportAttendedByCAF(@RequestBody ConsultShiftReportDTO consultShiftReportDTO) {
+        System.out.println("LLEGO"+ consultShiftReportDTO.getStartDate() + " " + consultShiftReportDTO.getEndDate());
+        List<ShiftsReportDTO> shiftsReportDTOS = shiftService.shiftsReportAttendedByCAF(consultShiftReportDTO);
+
+        // Si la lista está vacía, devuelve un código 204 sin contenido.
+        if (shiftsReportDTOS.isEmpty()) {
+            System.out.println("PROBLEMA VACIO");
+            return ResponseEntity.noContent().build();
+        } else {
+            // Si existen DayAssignments, los devuelve con un código 200 OK.
+            return ResponseEntity.ok(shiftsReportDTOS);
+        }
     }
 }
