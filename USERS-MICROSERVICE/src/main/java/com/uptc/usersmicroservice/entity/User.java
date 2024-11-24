@@ -25,6 +25,7 @@ public class User {
     private String universityCode;
     private Date birthDate;
     private String phoneNumber;
+    @Enumerated(EnumType.STRING)
     private UserTypeEnum userType;
     private String residenceAddress;
 

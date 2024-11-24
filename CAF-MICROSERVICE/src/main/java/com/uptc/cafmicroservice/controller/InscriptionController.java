@@ -110,6 +110,28 @@ public class InscriptionController {
         return ResponseEntity.ok(inscriptionDTO);
     }
 
+    /**
+     * Endpoint para marcar una inscripción como activa.
+     * @param inscriptionId El ID de la inscripción a marcar como inactiva.
+     * @return Una ResponseEntity con el InscriptionDTO actualizado o sin contenido si falla.
+     */
+    @PostMapping("/active-inscription/{inscriptionId}")
+    public ResponseEntity<InscriptionDTO> activeUserInscription(@PathVariable("inscriptionId") int inscriptionId) {
+        // Llama al método del servicio para cambiar el estado de la inscripción a "ACCEPTED"
+        Inscription inscription = inscriptionService.changeUserInscription(inscriptionId, InscriptionStatusEnum.ACCEPTED);
+
+        // Verifica si el cambio fue exitoso y responde en consecuencia
+        if (inscription == null) {
+            return ResponseEntity.noContent().build(); // Devuelve un 204 No Content si el cambio falla
+        }
+
+        // Mapea el objeto Inscription a InscriptionDTO y devuelve la respuesta
+        InscriptionDTO inscriptionDTO = new InscriptionDTO();
+        inscriptionDTO.setId(inscription.getId());
+        inscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
+        return ResponseEntity.ok(inscriptionDTO);
+    }
+
     @GetMapping("/all/{email}")
     public ResponseEntity<List<InscriptionDTO>> getAllUserInscriptions(@PathVariable("email") String email) {
         // Llama al método del servicio para obtener todas las inscripciones del usuario
@@ -143,6 +165,18 @@ public class InscriptionController {
     public ResponseEntity<List<UserInscriptionDTO>> getAllUserInscriptionsToCaf(@PathVariable("email") String email) {
         // Llama al método del servicio para obtener todas las inscripciones del usuario
         List<UserInscriptionDTO> inscriptions = inscriptionService.getAllInscriptionByFitnessCenter(email);
+
+        // Verifica si la lista es nula y responde en consecuencia
+        if (inscriptions == null) {
+            return ResponseEntity.noContent().build(); // Devuelve un 204 No Content si no hay inscripciones
+        }
+        return ResponseEntity.ok(inscriptions); // Devuelve un 200 OK con la lista de inscripciones
+    }
+
+    @GetMapping("/all-active/coordinator-email/{email}")
+    public ResponseEntity<List<UserInscriptionDTO>> getAllUserActiveInscriptionsToCaf(@PathVariable("email") String email) {
+        // Llama al método del servicio para obtener todas las inscripciones del usuario
+        List<UserInscriptionDTO> inscriptions = inscriptionService.getAllActiveInscriptionByFitnessCenter(email);
 
         // Verifica si la lista es nula y responde en consecuencia
         if (inscriptions == null) {

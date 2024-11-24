@@ -66,6 +66,36 @@ public class InscriptionService {
         }
     }
 
+    /**
+     * Obtiene todas las inscripciones activas de un centro de fitness específico.
+     *
+     * @param email Correo electrónico del coordinador actual del CAF
+     * @return Lista de objetos InscriptionDTO o null si el centro de fitness no existe.
+     */
+    public List<UserInscriptionDTO> getAllActiveInscriptionByFitnessCenter(String email) {
+        FitnessCenter fitnessCenter = fitnessCenterRepository.findByCoordinatorEmail(email);
+        List<UserInscriptionDTO> inscriptionDTOList = new ArrayList<>();
+        if (fitnessCenter.getId() != 0) {
+            List<Inscription> inscriptionList = inscriptionRepository.findFitnessCenterActiveInscriptions(email);
+            for (Inscription inscription : inscriptionList) {
+                UserAllDataDTO userAllDataDTO = searchAllUserDataByUserId(inscription.getUserId());
+                UserInscriptionDTO userInscriptionDTO = new UserInscriptionDTO();
+
+                if(userAllDataDTO != null){
+                    userInscriptionDTO.setInscriptionId(inscription.getId());
+                    userInscriptionDTO.setUserAllDataDTO(userAllDataDTO);
+                    userInscriptionDTO.setInscriptionDate(inscription.getInscriptionDate());
+                    userInscriptionDTO.setInscriptionStatus(inscription.getInscriptionStatus());
+                    inscriptionDTOList.add(userInscriptionDTO);
+                }
+            }
+            // Convierte cada inscripción en un objeto DTO y lo agrega a la lista
+            return inscriptionDTOList;
+        } else {
+            return null;
+        }
+    }
+
     public Inscription getInscriptionById(int id) {
         return inscriptionRepository.findById(id).orElse(null);
     }
@@ -155,7 +185,7 @@ public class InscriptionService {
 
     private UserAllDataDTO searchAllUserDataByUserId(int userId) {
         ResponseEntity<UserAllDataDTO> response = restTemplate.exchange(
-                "http://USERS-MICROSERVICE/all-user-data/user-id/" + userId,
+                "http://USERS-MICROSERVICE/user/all-user-data/user-id/" + userId,
                 HttpMethod.GET,
                 new HttpEntity<>(null),
                 UserAllDataDTO.class

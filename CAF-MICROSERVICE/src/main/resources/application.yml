@@ -23,6 +23,6 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: http://172.26.4.191:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 media:
   location: mediafiles

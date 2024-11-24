@@ -4,6 +4,7 @@ import com.uptc.usersmicroservice.dto.UserAllDataDTO;
 import com.uptc.usersmicroservice.dto.UserBasicDTO;
 import com.uptc.usersmicroservice.dto.UserDTO;
 import com.uptc.usersmicroservice.entity.User;
+import com.uptc.usersmicroservice.enums.UserTypeEnum;
 import com.uptc.usersmicroservice.mapper.UserMapper;
 import com.uptc.usersmicroservice.repository.ProgramRepository;
 import com.uptc.usersmicroservice.service.ProgramService;
@@ -44,7 +45,7 @@ public class UserController {
     @GetMapping("/basic/{email}")
     public ResponseEntity<UserBasicDTO> getBasicUserByEmail(@PathVariable("email") String userEmail){
         User user = userService.getUserByEmail(userEmail);
-        if (user.getId() == 0) {
+        if (user == null) {
             return ResponseEntity.noContent().build();
         }
 
@@ -74,7 +75,7 @@ public class UserController {
     @GetMapping("/all-user-data/user-id/{userId}")
     public ResponseEntity<UserAllDataDTO> getAllUserDataById(@PathVariable("userId") int userId){
         User user = userService.getUserById(userId);
-        if (user.getId() == 0) {
+        if (user == null) {
             return ResponseEntity.noContent().build();
         }
 
@@ -85,6 +86,7 @@ public class UserController {
         userAllDataDTO.setDocumentType(user.getDocumentType());
         userAllDataDTO.setDocumentNumber(user.getDocumentNumber());
         userAllDataDTO.setUniversityCode(user.getUniversityCode());
+
         userAllDataDTO.setUserType(user.getUserType().name());
         userAllDataDTO.setBirthDate(user.getBirthDate());
         userAllDataDTO.setPhoneNumber(user.getPhoneNumber());
