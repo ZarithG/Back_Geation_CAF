@@ -28,6 +28,14 @@ public interface ShiftInstanceRepository extends JpaRepository<ShiftInstance, Lo
             @Param("actDate") LocalDate actDate);
 
 
+    @Query("SELECT s FROM ShiftInstance s WHERE s.date = :actDate AND s.shift.dayAssignment.fitnessCenter = :fitnessCenter " +
+            "AND s.shift.id = :shiftId AND :timeAct < s.shift.endTime")
+    List<ShiftInstance> findActiveShiftsInstanceByFitnessCenterAndCurrentTime(
+            @Param("fitnessCenter") int fitnessCenter,
+            @Param("timeAct") LocalTime timeAct,
+            @Param("actDate") LocalDate actDate,
+            @Param("shiftId") int shiftId);
+
     @Query("SELECT count(s) FROM ShiftInstance s WHERE s.shift.id = :shiftId AND s.date = :dateShift")
     int countShiftInstanceByDateAndShiftId(@Param("shiftId")long shiftId, @Param("dateShift") LocalDate dateShift);
 }

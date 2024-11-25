@@ -148,7 +148,12 @@ public class ShiftInstanceService {
             List<ShiftDTO> shiftDTOList = shiftService.getShiftsByDayAssignment(dayAssignment.get().getId());
             List<ShiftInstance> shiftInstancesAvailable = new ArrayList<>();
             for (ShiftDTO shiftDTO : shiftDTOList) {
-                List<ShiftInstance> shiftInstances = shiftInstanceRepository.findShiftInstanceByDateAndShiftId(actDate, shiftDTO.getId());
+                List<ShiftInstance> shiftInstances = new ArrayList<>();
+                if(actDate.isEqual(LocalDate.now()))
+                    shiftInstances = shiftInstanceRepository.findActiveShiftsInstanceByFitnessCenterAndCurrentTime(idFitnessCenter,LocalTime.now(),actDate,shiftDTO.getId());
+                else{
+                    shiftInstances = shiftInstanceRepository.findShiftInstanceByDateAndShiftId(actDate,shiftDTO.getId());
+                }
                 if(!shiftInstances.isEmpty()){
                     ShiftInstance actShiftInstance = shiftInstances.get(0);
                     if(actShiftInstance.getPlaceAvailable() > 0){
