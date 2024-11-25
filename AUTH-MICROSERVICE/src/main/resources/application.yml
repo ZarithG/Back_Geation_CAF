@@ -91,6 +91,9 @@ admin-paths:
     - uri: "/shift/reserve/create-shift-instances/{1}[1-9]+[0-9]*"
       method: "POST"
 
+    - uri: "/caf/files/obtain/{1}[1-9]+[0-9]*"
+      method: "GET"
+
     - uri: "/shift/shift-instances/finishShift/{1}[1-9]+[0-9]*"
       method: "POST"
 
@@ -189,6 +192,9 @@ wellbeing-director-paths:
     - uri: "/shift/shiftsReportAttended"
       method: "POST"
 
+    - uri: "/caf/files/obtain/{1}[1-9]+[0-9]*"
+      method: "GET"
+
     - uri: "/auth/user/all"
       method: "GET"
 
@@ -257,6 +263,9 @@ caf-coordinator-paths:
     - uri: "/auth/user/all"
       method: "GET"
 
+    - uri: "/caf/files/obtain/{1}[1-9]+[0-9]*"
+      method: "GET"
+
     - uri: "/user/basic/user-id/{1}[1-9]+[0-9]*"
       method: "GET"
 
@@ -310,6 +319,9 @@ user-paths:
     - uri: "/caf/files/upload/{1}[1-9]+[0-9]*"
       method: "POST"
 
+    - uri: "/caf/files/obtain/{1}[1-9]+[0-9]*"
+      method: "GET"
+
     - uri: "/user/isUserOldMayor/[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}"
       method: "GET"
 
@@ -347,6 +359,9 @@ sportsman-paths:
 
     - uri: "/user/save"
       method: "POST"
+
+    - uri: "/caf/files/obtain/{1}[1-9]+[0-9]*"
+      method: "GET"
 
     - uri: "/caf/id/{1}[1-9]+[0-9]*"
       method: "GET"

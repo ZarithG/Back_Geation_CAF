@@ -1,5 +1,6 @@
 package com.uptc.cafmicroservice.controller;
 
+import com.uptc.cafmicroservice.dto.ConsentDTO;
 import com.uptc.cafmicroservice.dto.InscriptionDTO;
 import com.uptc.cafmicroservice.entity.Inscription;
 import com.uptc.cafmicroservice.enums.ConsentTypeEnum;
@@ -62,5 +63,17 @@ public class ConsentController {
         return ResponseEntity.ok(resource); // Devuelve un 200 OK con el recurso si se encuentra
     }
 
-
+    /**
+     * Endpoint para buscar los tipos de consentimientos adjuntados en una inscripción.
+     * @param inscriptionId El ID de la inscripción.
+     * @return Una ResponseEntity con objetos ConsentDTO que tengan los tipos de consentimienos o o sin contenido si no se encuentran.
+     */
+    @GetMapping("/obtain/{inscriptionId}")
+    public ResponseEntity<List<ConsentDTO>> obtainAllConsent(@PathVariable("inscriptionId") int inscriptionId){
+        List<ConsentDTO> consentDTOList = consentService.obtainAllConsentSends(inscriptionId);
+        if (consentDTOList == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(consentDTOList);
+    }
 }
