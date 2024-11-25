@@ -1,5 +1,6 @@
 package com.uptc.cafmicroservice.service;
 
+import com.uptc.cafmicroservice.dto.ConsentDTO;
 import com.uptc.cafmicroservice.dto.InscriptionDTO;
 import com.uptc.cafmicroservice.entity.Consent;
 import com.uptc.cafmicroservice.entity.Inscription;
@@ -23,7 +24,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ConsentService {
@@ -138,5 +141,25 @@ public class ConsentService {
         } catch (MalformedURLException e) {
             return null; // Devuelve null si ocurre un error al construir la URL del recurso
         }
+    }
+
+    /**
+     * Obtiene los tipos de consentimientos agregados por un usuario.
+     * @param inscriptionId El ID de la inscripción.
+     * @return Una lista con los tipos de consentimientos agregados por el usuario
+     */
+    public List<ConsentDTO> obtainAllConsentSends(int inscriptionId){
+        List<Consent> consents = consentRepository.findByInscriptionId(inscriptionId);
+        if (consents.isEmpty()){
+            return null;
+        }
+        List<ConsentDTO> consentDTOS = new ArrayList<>();
+        for (Consent consent : consents) {
+            ConsentDTO consentDTO = new ConsentDTO();
+            consentDTO.setId(consent.getId());
+            consentDTO.setConsentType(consent.getConsentType());
+            consentDTOS.add(consentDTO);
+        }
+        return consentDTOS;
     }
 }

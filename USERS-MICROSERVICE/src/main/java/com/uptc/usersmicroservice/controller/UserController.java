@@ -4,7 +4,6 @@ import com.uptc.usersmicroservice.dto.UserAllDataDTO;
 import com.uptc.usersmicroservice.dto.UserBasicDTO;
 import com.uptc.usersmicroservice.dto.UserDTO;
 import com.uptc.usersmicroservice.entity.User;
-import com.uptc.usersmicroservice.enums.UserTypeEnum;
 import com.uptc.usersmicroservice.mapper.UserMapper;
 import com.uptc.usersmicroservice.repository.ProgramRepository;
 import com.uptc.usersmicroservice.service.ProgramService;
@@ -14,8 +13,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Date;
 import java.util.List;
 
 @Controller
