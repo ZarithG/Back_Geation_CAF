@@ -34,7 +34,7 @@ public interface ShiftRepository extends JpaRepository<Shift,Integer> {
             s.maximum_place_available AS maximumPlaceAvailable,
             da.day AS day,
             COUNT(CASE WHEN r.reservation_enum = 'ATTENDED' THEN 1 END) AS attendedCount,
-            COUNT(CASE WHEN r.reservation_enum = 'NO_ATTENDED' THEN 1 END) AS noAttendedCount
+            COUNT(CASE WHEN r.reservation_enum = 'NOT_ATTENDED' THEN 1 END) AS noAttendedCount
         FROM 
             shift s
         JOIN 
@@ -50,7 +50,7 @@ public interface ShiftRepository extends JpaRepository<Shift,Integer> {
         GROUP BY 
             s.id, s.start_time, s.end_time, s.maximum_place_available, da.day
         ORDER BY 
-            s.start_time
+            attendedCount DESC
         """, nativeQuery = true)
     List<Object[]> getShiftDetailsWithReservationCounts(
             @Param("fitnessCenter") int fitnessCenter,

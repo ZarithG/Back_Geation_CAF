@@ -195,6 +195,7 @@ public class ShiftService {
             auxShiftReportDTO.setEndTime(endTime);
             auxShiftReportDTO.setPlaceAvailable((int)row[3]);
             auxShiftReportDTO.setAttended((long)row[5]);
+            System.out.println((long)row[6]);
             auxShiftReportDTO.setNoAttended((long)row[6]);
             auxShiftReportDTO.setTotal((long)row[5] + (long)row[6]);
             shiftReportDTOs.add(auxShiftReportDTO);
