@@ -165,7 +165,13 @@ public class ShiftService {
 
 
     public Boolean deleteShift(int dayAssignment, ShiftDTO shiftToDelete){
-        return (shiftRepository.deleteByIdAndDayAssignmentId(shiftToDelete.getId(),dayAssignment)) > 0;
+        Optional<Shift> shiftToChangeState = shiftRepository.findByIdAndDayAssignmentId(shiftToDelete.getId(), dayAssignment);
+        if(shiftToChangeState.isPresent()){
+            shiftToChangeState.get().setStatus(false);
+            shiftRepository.save(shiftToChangeState.get());
+            return true;
+        }
+        return false;
     }
 
     /**

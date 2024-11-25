@@ -15,21 +15,17 @@ import java.util.Optional;
 public interface ShiftRepository extends JpaRepository<Shift,Integer> {
 
     //Consulata para obtener un turno específico
-    Optional<Shift> findByIdAndDayAssignmentId(int shiftId,int dayAssignmentId);
+    @Query("SELECT s from Shift s WHERE s.id = :shiftId AND s.status = true AND s.dayAssignment = :dayAssignment")
+    Optional<Shift> findByIdAndDayAssignmentId(@Param("shiftId")int shiftId,@Param("dayAssignment")int dayAssignmentId);
     // Método para obtener los Shifts asociados a un DayAssignment específico
-    List<Shift> findByDayAssignment(DayAssignment dayAssignment);
+    @Query("SELECT s from Shift s WHERE s.status = true AND s.dayAssignment = :dayAssignment")
+    List<Shift> findByDayAssignment(@Param("dayAssignment") DayAssignment dayAssignment);
 
     //Consulta para listar los turnos de un Día de agendamiento
     List<Shift> findByDayAssignmentId(int dayAssignmentId);
 
 
-    //Consulta para eliminar un turno
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM Shift s WHERE s.id = :shiftId AND s.dayAssignment.id = :dayAssignmentId")
-    int deleteByIdAndDayAssignmentId(int shiftId, int dayAssignmentId);
-
-    //Consulta para los reportes sobre la asistencia a los CAF en turnos específicos
+        //Consulta para los reportes sobre la asistencia a los CAF en turnos específicos
     @Query(value = """
         SELECT 
             s.id AS shiftId,

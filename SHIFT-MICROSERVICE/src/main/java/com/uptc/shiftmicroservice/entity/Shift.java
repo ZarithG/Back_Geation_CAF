@@ -31,6 +31,8 @@ public class Shift implements Comparable<com.uptc.shiftmicroservice.entity.Shift
     private LocalTime endTime;
     private int maximumPlaceAvailable;
 
+    private boolean status;
+
     @Override
     public int compareTo(com.uptc.shiftmicroservice.entity.Shift other) {
         return this.startTime.compareTo(other.startTime);
