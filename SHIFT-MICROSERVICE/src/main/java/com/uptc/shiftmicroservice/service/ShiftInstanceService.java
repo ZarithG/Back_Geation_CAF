@@ -226,10 +226,22 @@ public class ShiftInstanceService {
      * @param fitnessCenter
      * @return  Optional con la instancia actual ShiftInstance, o vacío si no existe.
      */
-    public Optional<ShiftInstance> obtainActShiftInstance(int fitnessCenter){
+    public Optional<ShiftDTO> obtainActShiftInstance(int fitnessCenter){
         List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter, LocalTime.now(), LocalDate.now());
-        if(!shiftInstances.isEmpty()){
-            return Optional.of(shiftInstances.get(0));
+        List<ShiftDTO> shifts = new ArrayList<>();
+        for(ShiftInstance shiftInstance : shiftInstances){
+            ShiftDTO auxShift = new ShiftDTO();
+            auxShift.setId(shiftInstance.getShift().getId());
+            auxShift.setDayAssignment(shiftInstance.getShift().getDayAssignment().getId());
+
+            Optional<Shift> shift = shiftService.findShiftById(auxShift);
+            if(shift.isPresent()){
+                shifts.add(ShiftMapper.INSTANCE.shiftToShiftDTO(shift.get()));
+            }
+        }
+
+        if(!shifts.isEmpty()){
+            return Optional.of(shifts.get(0));
         }
         return Optional.empty();
     }

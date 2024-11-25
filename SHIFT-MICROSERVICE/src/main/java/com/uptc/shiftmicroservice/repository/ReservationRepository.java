@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
@@ -15,8 +16,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.shiftInstance = :shiftInstance")
     int countReservationsByShiftInstance(@Param("shiftInstance") ShiftInstance shiftInstance);
 
-    @Query("SELECT r FROM Reservation r WHERE r.reservationEnum = 'SCHEDULED' AND r.shiftInstance.date = CURRENT_DATE AND r.userId = :userId")
-    List<Reservation> findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(@Param("userId") int userId);
+    @Query("SELECT r FROM Reservation r WHERE r.reservationEnum = 'SCHEDULED' AND r.shiftInstance.date = :date AND r.userId = :userId")
+    List<Reservation> findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(@Param("userId") int userId,@Param("date") LocalDate date);
 
     List<Reservation> findByShiftInstance_Id(long idShift);
 

@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface ShiftRepository extends JpaRepository<Shift,Integer> {
 
     //Consulata para obtener un turno específico
-    @Query("SELECT s from Shift s WHERE s.id = :shiftId AND s.status = true AND s.dayAssignment = :dayAssignment")
+    @Query("SELECT s from Shift s WHERE s.id = :shiftId AND s.status = true AND s.dayAssignment.id = :dayAssignment")
     Optional<Shift> findByIdAndDayAssignmentId(@Param("shiftId")int shiftId,@Param("dayAssignment")int dayAssignmentId);
     // Método para obtener los Shifts asociados a un DayAssignment específico
     @Query("SELECT s from Shift s WHERE s.status = true AND s.dayAssignment = :dayAssignment")

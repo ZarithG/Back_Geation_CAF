@@ -29,5 +29,5 @@ public class ShiftDTO {
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
     private int maximumPlaceAvailable;
-    private boolean status;
+    private int status;
 }

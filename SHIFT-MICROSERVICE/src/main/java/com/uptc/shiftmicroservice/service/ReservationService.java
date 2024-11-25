@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -57,8 +58,10 @@ public class ReservationService {
             ShiftInstance actShiftInstance = shiftInstanceService.findShiftInstanceShiftId(shiftInstance.get().getShift().getId());
             if (actShiftInstance != null){
                 if (actShiftInstance.getPlaceAvailable() > 0) {
-                    List<Reservation> reservations = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId());
-                    if (reservations.isEmpty()) {
+                    List<Reservation> reservationsToDay = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId(), LocalDate.now());
+                    List<Reservation> reservationsTomorrow = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId(), LocalDate.now().plusDays(1));
+
+                    if (reservationsToDay.isEmpty() ) {
                         Reservation newReservation = new Reservation();
                         newReservation.setDateReservation(LocalDateTime.now());
                         newReservation.setShiftInstance(actShiftInstance);

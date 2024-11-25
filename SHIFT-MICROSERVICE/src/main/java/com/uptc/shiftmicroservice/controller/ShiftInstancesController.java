@@ -1,5 +1,6 @@
 package com.uptc.shiftmicroservice.controller;
 
+import com.uptc.shiftmicroservice.dto.ShiftDTO;
 import com.uptc.shiftmicroservice.dto.ShiftInstanceDTO;
 import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.mapper.ShiftInstanceMapper;
@@ -63,13 +64,13 @@ public class ShiftInstancesController {
      * o un código de estado 204 (sin contenido) si no hay turno activo en ese momento.
      */
     @GetMapping("/actShift/{idCaf}")
-    public ResponseEntity<ShiftInstanceDTO> getActualShiftByCAF(@PathVariable("idCaf") int idFitnessCenter) {
+    public ResponseEntity<ShiftDTO> getActualShiftByCAF(@PathVariable("idCaf") int idFitnessCenter) {
         // Obtener la instancia del turno actual.
-        Optional<ShiftInstance> actShift = shiftInstanceService.obtainActShiftInstance(idFitnessCenter);
+        Optional<ShiftDTO> actShift = shiftInstanceService.obtainActShiftInstance(idFitnessCenter);
 
         // Si se encuentra un turno activo, devolver su DTO.
         if (actShift.isPresent()) {
-            return ResponseEntity.ok(ShiftInstanceMapper.INSTANCE.shiftInstanceToShiftInstanceDTO(actShift.get()));
+            return ResponseEntity.ok(actShift.get());
         } else {
             // Si no se encuentra un turno activo, devolver un código 204 (sin contenido).
             return ResponseEntity.noContent().build();
