@@ -1,5 +1,6 @@
 package com.uptc.shiftmicroservice.service;
 
+import com.uptc.shiftmicroservice.dto.ShiftActualDTO;
 import com.uptc.shiftmicroservice.dto.ShiftDTO;
 import com.uptc.shiftmicroservice.entity.Day;
 import com.uptc.shiftmicroservice.entity.DayAssignment;
@@ -226,24 +227,32 @@ public class ShiftInstanceService {
      * @param fitnessCenter
      * @return  Optional con la instancia actual ShiftInstance, o vacío si no existe.
      */
-    public Optional<ShiftDTO> obtainActShiftInstance(int fitnessCenter){
+    public Optional<ShiftActualDTO> obtainActShiftInstance(int fitnessCenter) {
         List<ShiftInstance> shiftInstances = shiftInstanceRepository.findActiveShiftsByFitnessCenterAndCurrentTime(fitnessCenter, LocalTime.now(), LocalDate.now());
-        List<ShiftDTO> shifts = new ArrayList<>();
-        for(ShiftInstance shiftInstance : shiftInstances){
+        ShiftActualDTO shiftActualDTO = new ShiftActualDTO();
+        for (ShiftInstance shiftInstance : shiftInstances) {
             ShiftDTO auxShift = new ShiftDTO();
             auxShift.setId(shiftInstance.getShift().getId());
             auxShift.setDayAssignment(shiftInstance.getShift().getDayAssignment().getId());
 
             Optional<Shift> shift = shiftService.findShiftById(auxShift);
-            if(shift.isPresent()){
-                shifts.add(ShiftMapper.INSTANCE.shiftToShiftDTO(shift.get()));
+            if (shift.isPresent()) {
+                shiftActualDTO.setId(shift.get().getId());
+                shiftActualDTO.setEndTime(shift.get().getEndTime());
+                shiftActualDTO.setStartTime(shift.get().getStartTime());
+                shiftActualDTO.setMaximumPlaceAvailable(shift.get().getMaximumPlaceAvailable());
+                shiftActualDTO.setDayAssignment(shift.get().getDayAssignment().getId());
+                shiftActualDTO.setShiftInstanceId(shiftInstance.getId());
+                int status = 0;
+                if(shift.get().isStatus()){
+                    status = 1;
+                }
+                shiftActualDTO.setStatus(status);
+                return Optional.of(shiftActualDTO);
             }
-        }
-
-        if(!shifts.isEmpty()){
-            return Optional.of(shifts.get(0));
         }
         return Optional.empty();
     }
+
 }
 
