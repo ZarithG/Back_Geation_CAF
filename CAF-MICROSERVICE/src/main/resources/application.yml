@@ -7,9 +7,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://autorack.proxy.rlwy.net:11940/CafDB?createDatabaseIfNotExist=true
+    url: jdbc:mysql://junction.proxy.rlwy.net:34531/CafDB?createDatabaseIfNotExist=true
     username: root
-    password: dGHbPPRRHBvWareoMjJvlUGabalVYVZU
+    password: nQSzvmWUvDeWaJOEHXtrGNlOmFwCzwRx
   servlet:
     multipart:
       max-file-size: 5MB

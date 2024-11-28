@@ -127,7 +127,7 @@ public class InscriptionService {
      */
     public List<InscriptionDTO> getAllUserInscriptionsToCAF(String email, int fitnessCenterId) {
         int userId = searchUserByEmail(email); // Busca el ID del usuario por su email
-
+        System.out.println("UserID" + userId);
         if (userId != 0) {
             List<Inscription> inscriptionList = inscriptionRepository.findAllUserInscriptionsToCaf(userId, fitnessCenterId);
             // Convierte cada inscripción en un objeto DTO y lo agrega a la lista

@@ -6,6 +6,7 @@ import com.uptc.authmicroservice.dto.UserDTO;
 import com.uptc.authmicroservice.entity.AuthUser;
 import com.uptc.authmicroservice.entity.Role;
 import com.uptc.authmicroservice.enums.RoleEnum;
+import com.uptc.authmicroservice.enums.UserTypeEnum;
 import com.uptc.authmicroservice.mapper.AuthUserMapper;
 import com.uptc.authmicroservice.security.JwtProvider;
 import com.uptc.authmicroservice.service.AuthUserService;
@@ -103,7 +104,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 UserDTO userDTO = new UserDTO();
                 userDTO.setEmail(email);
                 userDTO.setName(name);
-                userDTO.setUserType("STUDENT");
+                userDTO.setUserType(UserTypeEnum.STUDENT);
 
                 HttpEntity<UserDTO> requestNewUser = new HttpEntity<>(userDTO);
 

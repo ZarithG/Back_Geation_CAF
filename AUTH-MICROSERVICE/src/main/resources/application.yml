@@ -10,9 +10,13 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://autorack.proxy.rlwy.net:27967/AuthenticationDB?createDatabaseIfNotExist=true
+    url: jdbc:mysql://autorack.proxy.rlwy.net:49890/AuthenticationDB?createDatabaseIfNotExist=true
     username: root
-    password: mVGfssOpJTXkgAInNhCSCvQYxJCjzbdw
+    password: etHCuhCcorXHpWMvSmBwduwGAeIHgaPz
+#    url: jdbc:mysql://autorack.proxy.rlwy.net:27967/AuthenticationDB?createDatabaseIfNotExist=true
+#    username: root
+#    password: mVGfssOpJTXkgAInNhCSCvQYxJCjzbdw
+
 
   security:
     oauth2:

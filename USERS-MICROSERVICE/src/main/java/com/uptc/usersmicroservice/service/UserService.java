@@ -98,6 +98,7 @@ public class UserService {
     public User saveUser(UserDTO userDTO) {
         User existingUser = getUserByEmail(userDTO.getEmail());
         User userToAdd = UserMapper.INSTANCE.mapUserDTOToUser(userDTO);
+        System.out.println("Tipo de usuario " + userDTO.getUserType());
 
         if(userDTO.getUserType() != null) {
             userToAdd.setUserType(userDTO.getUserType());
@@ -105,7 +106,7 @@ public class UserService {
 
         userToAdd.setCity(cityService.findCityById(4));
 
-        if (existingUser.getId() != 0) {
+        if (existingUser != null) {
             userToAdd.setName(existingUser.getName());
             userToAdd.setId(existingUser.getId());
             userToAdd.setUniversityInformation(saveUserUniversityInformation(existingUser.getUniversityInformation(),

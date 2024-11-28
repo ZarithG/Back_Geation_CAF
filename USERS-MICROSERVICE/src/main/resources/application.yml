@@ -7,9 +7,10 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://junction.proxy.rlwy.net:40476/UsersDB?createDatabaseIfNotExist=true
+    url: jdbc:mysql://autorack.proxy.rlwy.net:12532/UsersDB?createDatabaseIfNotExist=true
     username: root
-    password: uBraPdmSSSBPQnkHdGiWRUMbfaEFyFNR
+    password: inojQwWrpbdOvWQaGQaYucVlMkLfqrxx
+
 
 server:
   port: 9092
