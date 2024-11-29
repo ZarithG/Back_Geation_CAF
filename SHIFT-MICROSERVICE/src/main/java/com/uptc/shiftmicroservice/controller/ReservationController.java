@@ -8,6 +8,7 @@ import com.uptc.shiftmicroservice.service.ReservationService;
 import com.uptc.shiftmicroservice.service.ShiftInstanceService;
 import com.uptc.shiftmicroservice.service.ShiftService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -129,8 +130,7 @@ public class ReservationController {
             return ResponseEntity.ok(reservationRegistry.get());
         }
 
-        // Si la instancia no está activa, devolver 204 No Content.
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**
