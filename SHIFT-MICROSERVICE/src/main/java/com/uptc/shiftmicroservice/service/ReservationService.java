@@ -53,35 +53,22 @@ public class ReservationService {
      * @return Una reserva creada si es posible, o un Optional vacío si no se puede reservar.
      */
     public Optional<Reservation> reserveShiftForUser(ReservationDTO reservationDTO) {
-        Optional<ShiftInstance> shiftInstance = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
-        if (shiftInstance.isPresent()) {
-            ShiftInstance actShiftInstance = shiftInstanceService.findShiftInstanceShiftId(shiftInstance.get().getShift().getId());
+        Optional<ShiftInstance> shiftInstanceToReserve = shiftInstanceService.findShiftInstanceById(reservationDTO.getIdShiftInstance());
+        if (shiftInstanceToReserve.isPresent()) {
+            //ShiftInstance actShiftInstance = shiftInstanceService.findShiftInstanceShiftId(shiftInstance.get().getShift().getId());
+            ShiftInstance actShiftInstance = shiftInstanceToReserve.get();
             if (actShiftInstance != null){
                 if (actShiftInstance.getPlaceAvailable() > 0) {
                     List<Reservation> reservationsToDay = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId(), LocalDate.now());
                     List<Reservation> reservationsTomorrow = reservationRepository.findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(reservationDTO.getUserId(), LocalDate.now().plusDays(1));
 
-                    if (reservationsToDay.isEmpty() ) {
-                        Reservation newReservation = new Reservation();
-                        newReservation.setDateReservation(LocalDateTime.now());
-                        newReservation.setShiftInstance(actShiftInstance);
-                        newReservation.setUserId(reservationDTO.getUserId());
-                        newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
-
-                        ShiftInstance newShiftInstance = new ShiftInstance();
-                        newShiftInstance.setShift(actShiftInstance.getShift());
-                        newShiftInstance.setDate(actShiftInstance.getDate());
-                        newShiftInstance.setPlaceAvailable(actShiftInstance.getPlaceAvailable() - 1);
-
-                        if(newShiftInstance.getPlaceAvailable() == 0){
-                            newShiftInstance.setState(false);
-                        }else{
-                            newShiftInstance.setState(true);
-                        }
-
-                        ShiftInstance saveShiftInstance = shiftInstanceRepository.save(newShiftInstance);
-                        if(saveShiftInstance.getId() != 0){
-                            return Optional.of(reservationRepository.save(newReservation));
+                    if ((reservationsToDay.isEmpty() && isToDate(actShiftInstance.getDate())) ||
+                            (reservationsTomorrow.isEmpty() && !isToDate(actShiftInstance.getDate()))) {
+                        //No tiene turnos agendados para hoy
+                        //Actualizar cupos disponibles
+                        ShiftInstance  newShiftInstance = updatePlacesAvailable(actShiftInstance);
+                        if(newShiftInstance.getId() != 0){
+                            return Optional.of(createReservation(actShiftInstance, reservationDTO));
                         }
                         return Optional.empty();
                     }
@@ -91,6 +78,39 @@ public class ReservationService {
         return Optional.empty();
     }
 
+    /**
+     * Verifica si la fecha
+     * @param reservationDate
+     * @return
+     */
+    private boolean isToDate(LocalDate reservationDate){
+        return reservationDate.equals(LocalDate.now());
+    }
+
+    private Reservation createReservation(ShiftInstance actShiftInstance, ReservationDTO reservationDTO){
+        Reservation newReservation = new Reservation();
+        newReservation.setDateReservation(LocalDateTime.now());
+        newReservation.setShiftInstance(actShiftInstance);
+        newReservation.setUserId(reservationDTO.getUserId());
+        newReservation.setReservationEnum(ReservationEnum.SCHEDULED);
+        return reservationRepository.save(newReservation);
+    }
+
+    private ShiftInstance  updatePlacesAvailable(ShiftInstance actShiftInstance) {
+        ShiftInstance newShiftInstance = new ShiftInstance();
+        newShiftInstance.setShift(actShiftInstance.getShift());
+        newShiftInstance.setDate(actShiftInstance.getDate());
+        newShiftInstance.setPlaceAvailable(actShiftInstance.getPlaceAvailable() - 1);
+
+        if(newShiftInstance.getPlaceAvailable() == 0){
+            newShiftInstance.setState(false);
+        }else{
+            newShiftInstance.setState(true);
+        }
+
+        return shiftInstanceRepository.save(newShiftInstance);
+
+    }
     /**
      * Valida que la fecha y hora de reserva sea anterior a la hora de finalización del turno.
      *
