@@ -168,8 +168,7 @@ public class ReservationController {
             return ResponseEntity.ok(reservationDTO);
         }
 
-        // Si no se encontró la reserva para eliminar, devolver 204 No Content.
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 }
 
