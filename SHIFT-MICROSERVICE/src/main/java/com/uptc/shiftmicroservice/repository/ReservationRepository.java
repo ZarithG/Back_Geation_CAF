@@ -17,7 +17,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     int countReservationsByShiftInstance(@Param("shiftInstance") ShiftInstance shiftInstance);
 
     @Query("SELECT r FROM Reservation r WHERE r.reservationEnum = 'SCHEDULED' AND r.shiftInstance.date = :date AND r.userId = :userId")
-    List<Reservation> findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(@Param("userId") int userId,@Param("date") LocalDate date);
+    List<Reservation> findAllByReservationEnumScheduledAndShiftInstanceDateIsTodayForUser(@Param("userId") int userId, @Param("date") LocalDate date);
 
     List<Reservation> findByShiftInstance_Id(long idShift);
 

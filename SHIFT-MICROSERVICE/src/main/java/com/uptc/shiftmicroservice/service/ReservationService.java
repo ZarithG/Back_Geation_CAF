@@ -4,13 +4,11 @@ import com.uptc.shiftmicroservice.dto.ReservationDTO;
 import com.uptc.shiftmicroservice.dto.ShiftReservationDTO;
 import com.uptc.shiftmicroservice.dto.UserBasicDTO;
 import com.uptc.shiftmicroservice.entity.Reservation;
-import com.uptc.shiftmicroservice.entity.Shift;
 import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import com.uptc.shiftmicroservice.repository.ReservationRepository;
 import com.uptc.shiftmicroservice.repository.ShiftInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -208,17 +206,11 @@ public UserBasicDTO searchUserById(int userId){
                 }
 
                 ShiftInstance saveShiftInstance = shiftInstanceRepository.save(newShiftInstance);
-                try{
-                    reservationRepository.deleteById(reservationDTO.getId());
-                } catch (EmptyResultDataAccessException e) {
-                    // Manejar el caso donde el registro no existe
-                    System.out.println("El registro no existe: " + e.getMessage());
-
+                Optional<Reservation> reservation = reservationRepository.findById(reservationDTO.getId());
+                if (reservation.isPresent()) {
+                    reservation.get().setReservationEnum(ReservationEnum.CANCELED);
+                    return Optional.of(reservationRepository.save(reservation.get()));
                 }
-                if(saveShiftInstance.getId() != 0){
-                    return reservationRepository.findById(reservationDTO.getId());
-                }
-
                 return Optional.empty();
             }
         }

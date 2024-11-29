@@ -1,6 +1,5 @@
 package com.uptc.shiftmicroservice.entity;
 
-import com.uptc.shiftmicroservice.entity.ShiftInstance;
 import com.uptc.shiftmicroservice.enums.ReservationEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,12 +10,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Reservation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
