@@ -70,12 +70,30 @@ public class AuthUserController {
      */
     @GetMapping("/user/all")
     public ResponseEntity<List<AuthUserCompleteDTO>> getAllUser() {
-        System.out.println("getAllUser");
         List<AuthUserCompleteDTO> authUserCompleteDTOList = authUserService.getAllUser();
         if (authUserCompleteDTOList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(authUserCompleteDTOList);
+    }
+
+    @GetMapping("/user/caf/all")
+    public ResponseEntity<List<AuthUserCompleteDTO>> getAllCAFCoordinators() {
+        List<AuthUserCompleteDTO> cafCoordinatorsDTOList = authUserService.getAllCAFCoordinators();
+        if (cafCoordinatorsDTOList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(cafCoordinatorsDTOList);
+    }
+
+    @GetMapping("/user/is-registered/{email}")
+    public ResponseEntity<AuthUser> isUserRegisteredByEmail(@PathVariable("email") String email){
+        AuthUser authUser = authUserService.getUserByUserName(email);
+        if (authUser == null) {
+            return ResponseEntity.noContent().build();
+        }
+        authUser.setPassword(null);
+        return ResponseEntity.ok(authUser);
     }
 
     /**

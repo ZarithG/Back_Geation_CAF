@@ -7,6 +7,7 @@ import com.uptc.cafmicroservice.entity.FitnessCenter;
 import com.uptc.cafmicroservice.enums.RoleEnum;
 import com.uptc.cafmicroservice.mapper.FitnessCenterMapper;
 import com.uptc.cafmicroservice.repository.FitnessCenterRepository;
+import com.uptc.cafmicroservice.repository.InscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,9 @@ public class FitnessCenterService {
     @Autowired
     FitnessCenterRepository fitnessCenterRepository;
 
+    @Autowired
+    InscriptionRepository inscriptionRepository;
+
     // Inyección de la dependencia de RestTemplate para realizar llamadas a servicios externos
     @Autowired
     RestTemplate restTemplate;
@@ -33,8 +37,23 @@ public class FitnessCenterService {
      * Obtiene todos los centros de fitness almacenados en la base de datos.
      * @return Lista de objetos FitnessCenter.
      */
-    public List<FitnessCenter> getAll() {
-        return fitnessCenterRepository.findAll(); // Devuelve la lista completa de centros de fitness
+    public List<FitnessCenterDTO> getAll() {
+        List<FitnessCenter> fitnessCenterList = fitnessCenterRepository.findAll();
+        if (!fitnessCenterList.isEmpty()) {
+            List<FitnessCenterDTO> fitnessCenterDTOList = FitnessCenterMapper.INSTANCE.mapFitnessCenterListToFitnessCenterDTOList(fitnessCenterList);// Devuelve la lista completa de centros de fitness
+            for (FitnessCenterDTO fitnessCenterDTO : fitnessCenterDTOList) {
+                System.out.println(fitnessCenterDTO.getCoordinatorEmail());
+                UserBasicDTO userBasicDTO = searchUserByEmail(fitnessCenterDTO.getCoordinatorEmail());
+                if(userBasicDTO != null){
+                    fitnessCenterDTO.setCoordinatorName(userBasicDTO.getName());
+                }else{
+                    return null;
+                }
+            }
+            return fitnessCenterDTOList;
+        }
+        return null;
+
     }
 
     /**
@@ -50,6 +69,10 @@ public class FitnessCenterService {
         }else{
             return null;
         }
+    }
+
+    public int countFitnessCenterActiveInscriptions(int fitnessCenterId){
+        return inscriptionRepository.countInscriptionsByFitnessCenter(fitnessCenterId);
     }
 
     /**
@@ -120,5 +143,22 @@ public class FitnessCenterService {
     public int obtainFitnessCenterIdByCoordinatorEmail(String coordinatorEmail){
         FitnessCenter fitnessCenter = fitnessCenterRepository.findByCoordinatorEmail(coordinatorEmail);
         return fitnessCenter.getId();
+    }
+
+
+
+    private UserBasicDTO searchUserByEmail(String email) {
+        ResponseEntity<UserBasicDTO> response = restTemplate.exchange(
+                "http://USERS-MICROSERVICE/user/basic/" + email,
+                HttpMethod.GET,
+                new HttpEntity<>(null),
+                UserBasicDTO.class
+        );
+        if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getBody() != null) {
+                return response.getBody();
+            }
+        }
+        return null; // Retorna 0 si no se encuentra el usuario
     }
 }

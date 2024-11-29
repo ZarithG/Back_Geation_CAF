@@ -19,8 +19,8 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Permitir solicitudes desde el dominio frontend
+//g
         config.addAllowedOriginPattern("https://cafuptc.netlify.app/");
-        config.addAllowedOriginPattern("http://localhost:3000/");
 
         // Permitir todos los métodos HTTP (GET, POST, PUT, DELETE).
         config.addAllowedMethod("*");

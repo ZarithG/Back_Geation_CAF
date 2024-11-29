@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/auth/verify/user", "/auth/google/login",
             "/auth/change-wellbeing-director", "/auth/active-user/**",
             "/auth/inactive-user/**", "/auth/isUserVerified/**",
-            "/auth/user/all"
+            "/auth/user/all", "/auth/user/caf/all",
+            "/auth/user/is-registered/**"
     };
 
     /**

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,11 +56,16 @@ public class AuthUserService {
         if (user.isPresent())
             return null;
 
+        Set<Role> roles = new HashSet<>();
+        for (Role role : dto.getRoles()){
+            roles.add(roleRepository.findByRoleName(role.getRoleName()));
+        }
+
         AuthUser authUser = AuthUser.builder()
                 .userName(dto.getUserName())
                 .password("DEFAULT") // Contraseña predeterminada.
-                .roles(dto.getRoles())
-                .isActive(dto.isActive())
+                .roles(roles)
+                .isActive(true)
                 .build();
 
         return authUserRepository.save(authUser);
@@ -185,16 +191,18 @@ public class AuthUserService {
                         UserBasicDTO.class
                 );
 
-                UserBasicDTO userBasicDTO = responseFromBasicUser.getBody();
+                if(responseFromBasicUser.getBody() != null){
+                    UserBasicDTO userBasicDTO = responseFromBasicUser.getBody();
 
-                AuthUserCompleteDTO authUserCompleteDTO = new AuthUserCompleteDTO();
-                authUserCompleteDTO.setId(authUser.getId());
-                authUserCompleteDTO.setName(userBasicDTO.getName());
-                authUserCompleteDTO.setUserName(authUser.getUserName());
-                authUserCompleteDTO.setRoles(roles);
-                authUserCompleteDTO.setActive(authUser.isActive());
-                authUserCompleteDTO.setUserVerified(authUser.isUserVerified());
-                authUserDTOList.add(authUserCompleteDTO);
+                    AuthUserCompleteDTO authUserCompleteDTO = new AuthUserCompleteDTO();
+                    authUserCompleteDTO.setId(authUser.getId());
+                    authUserCompleteDTO.setName(userBasicDTO.getName());
+                    authUserCompleteDTO.setUserName(authUser.getUserName());
+                    authUserCompleteDTO.setRoles(roles);
+                    authUserCompleteDTO.setActive(authUser.isActive());
+                    authUserCompleteDTO.setUserVerified(authUser.isUserVerified());
+                    authUserDTOList.add(authUserCompleteDTO);
+                }
             }
         }
         return authUserDTOList;
@@ -316,5 +324,52 @@ public class AuthUserService {
             return null;
         }
         return newWellbeingDirector; // Retorna el nuevo director de bienestar.
+    }
+
+    public AuthUserCompleteDTO obtainWellbeingDirector() {
+        List<AuthUser> actualWellbeingDirector = authUserRepository.findByRoleName(RoleEnum.ROLE_WELLBEING_DIRECTOR);
+        if (!actualWellbeingDirector.isEmpty()) {
+            AuthUser authUser = actualWellbeingDirector.get(0);
+            ResponseEntity<UserBasicDTO> responseFromBasicUser = restTemplate.exchange(
+                    "http://USERS-MICROSERVICE/user/basic/" + authUser.getUserName(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(null),
+                    UserBasicDTO.class
+            );
+            if (responseFromBasicUser.getStatusCode().equals(HttpStatus.OK)){
+                return convertUserBasicToAuthUserCompleteDTO(responseFromBasicUser.getBody(), authUser);
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public List<AuthUserCompleteDTO> getAllCAFCoordinators() {
+        List<AuthUser> authUserList = authUserRepository.findByRoleName(RoleEnum.ROLE_CAF_COORDINATOR);
+        List<AuthUserCompleteDTO> authUserDTOList = new ArrayList<>();
+        if (!authUserList.isEmpty()){
+            for (AuthUser authUser : authUserList) {
+                ResponseEntity<UserBasicDTO> responseFromBasicUser = restTemplate.exchange(
+                        "http://USERS-MICROSERVICE/user/basic/" + authUser.getUserName(),
+                        HttpMethod.GET,
+                        new HttpEntity<>(null),
+                        UserBasicDTO.class
+                );
+                if (responseFromBasicUser.getStatusCode().equals(HttpStatus.OK)){
+                    authUserDTOList.add(convertUserBasicToAuthUserCompleteDTO(responseFromBasicUser.getBody(), authUser));
+                }
+            }
+            return authUserDTOList;
+        }
+        return null;
+    }
+
+    private AuthUserCompleteDTO convertUserBasicToAuthUserCompleteDTO(UserBasicDTO userBasicDTO, AuthUser authUser) {
+        AuthUserCompleteDTO authUserCompleteDTO = new AuthUserCompleteDTO();
+        authUserCompleteDTO.setId(userBasicDTO.getId());
+        authUserCompleteDTO.setName(userBasicDTO.getName());
+        authUserCompleteDTO.setUserName(userBasicDTO.getEmail());
+        authUserCompleteDTO.setActive(authUser.isActive());
+        return authUserCompleteDTO;
     }
 }

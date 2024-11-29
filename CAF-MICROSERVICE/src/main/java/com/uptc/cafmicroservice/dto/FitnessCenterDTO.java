@@ -20,5 +20,6 @@ public class FitnessCenterDTO {
     private String description;
     private Sectional sectional;
     private String coordinatorEmail;
+    private String coordinatorName;
     private Set<Inscription> inscriptions = new HashSet<>();
 }

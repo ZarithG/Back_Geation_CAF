@@ -25,7 +25,7 @@ public class FitnessCenterController {
     @GetMapping("/all")
     public ResponseEntity<List<FitnessCenterDTO>> getAllFitnessCenter() {
         // Llama al método del servicio para obtener la lista de centros de fitness
-        List<FitnessCenter> fitnessCenterList = fitnessCenterService.getAll();
+        List<FitnessCenterDTO> fitnessCenterList = fitnessCenterService.getAll();
 
         // Verifica si la lista está vacía y responde en consecuencia
         if (fitnessCenterList.isEmpty()) {
@@ -33,7 +33,7 @@ public class FitnessCenterController {
         }
 
         // Devuelve un 200 OK con la lista de DTOs mapeada
-        return ResponseEntity.ok(FitnessCenterMapper.INSTANCE.mapFitnessCenterListToFitnessCenterDTOList(fitnessCenterList));
+        return ResponseEntity.ok(fitnessCenterList);
     }
 
     /**
@@ -76,6 +76,15 @@ public class FitnessCenterController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(fitnessCenterId);
+    }
+
+    @GetMapping("/count-inscriptions/{fitnessCenterId}")
+    public ResponseEntity<Integer> countFitnessCenterActiveInscriptions(@PathVariable("fitnessCenterId") int fitnessCenterId){
+        int count = fitnessCenterService.countFitnessCenterActiveInscriptions(fitnessCenterId);
+        if (count == 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(count);
     }
 
 }

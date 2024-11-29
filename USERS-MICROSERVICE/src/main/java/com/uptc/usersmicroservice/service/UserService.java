@@ -107,7 +107,7 @@ public class UserService {
         userToAdd.setCity(cityService.findCityById(4));
 
         if (existingUser != null) {
-            userToAdd.setName(existingUser.getName());
+            userToAdd.setName(existingUser.getName().toUpperCase());
             userToAdd.setId(existingUser.getId());
             userToAdd.setUniversityInformation(saveUserUniversityInformation(existingUser.getUniversityInformation(),
                     userDTO));
