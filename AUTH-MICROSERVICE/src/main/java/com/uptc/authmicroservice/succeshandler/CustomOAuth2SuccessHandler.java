@@ -143,7 +143,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             for (int i = 0; i < authUser.getRoles().toArray().length; i++) {
                 if (authUser.getRoles().toArray()[i].equals(RoleEnum.ROLE_USER)) {
                     isUser = true;
-                    targetUrl = UriComponentsBuilder.fromUriString("https://cafuptc.netlify.app/register/informationData")
+                    targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/register/informationData")
                             .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
                             .build().toUriString();
                     getRedirectStrategy().sendRedirect(request, response, targetUrl);
@@ -152,7 +152,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
             // Si el usuario no tiene el rol ROLE_USER, se redirige a la página principal.
             if (!isUser) {
-                targetUrl = UriComponentsBuilder.fromUriString("https://cafuptc.netlify.app/")
+                targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/")
                         .queryParam("authUser", URLEncoder.encode(authUserJson, StandardCharsets.UTF_8))
                         .build().toUriString();
                 getRedirectStrategy().sendRedirect(request, response, targetUrl);
@@ -161,7 +161,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         } catch (Exception e) {
             // Si ocurre un error, invalida la sesión y redirige al usuario a la página principal.
             authUserService.logout(request, response);
-            String targetUrl = UriComponentsBuilder.fromUriString("https://cafuptc.netlify.app/")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/")
                     .build().toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
